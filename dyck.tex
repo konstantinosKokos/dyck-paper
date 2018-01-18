@@ -19,7 +19,7 @@
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
 
-\title{$D^3$ as a MCFL}
+\title{$D^3$ as a 2-MCFL}
 
 \authorinfo{Orestis Melkonian, Konstantinos Kogkalidis}{Utrecht University, The Netherlands}{o.melkonian@uu.nl, konstantinos@riseup.net}
 
@@ -32,14 +32,12 @@
 Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est. 
 \end{abstract}
 
-%\ccsdesc[500]{Software and its engineering~Program verification}
+\ccsdesc[500]{Formal languages and automata theory~Grammars and context-free languages}
 %\ccsdesc[500]{Theory of computation~Program semantics}
 
-%\keywords{Predicate transformer semantics; Weakest Liberal Pre-condition (WLP); Guarded Command Language (GCL); Hoare logic; automated testing; formal verification}
+\keywords{Dyck Language; Multiple Context Free Grammars (MCFG); Guarded Command Language (GCL); Hoare logic; automated testing; formal verification}
 
-\epigraph{As you set out for Ithaka\\
-hope the voyage is a long one,\\
-full of adventure, full of discovery.}{\textit{C. P. Cavafy\\ Ithaka}}
+\epigraph{When you depart for Ithaca,\\wish for the road to be long,\\full of adventure, full of knowledge.}{\textit{C. P. Cavafy\\ Ithaca}}
 
 \section{Introduction}
 Our goal with this paper is the analysis of the 3-dimensional Dyck Language, $D^3$ under the scope of a 2-multiple context-free language, 2-MCFL. In this chapter, we start by providing some concise definitions and a brief overview of interesting correspondences and properties of the $D^3$. The goal of this chapter is to simply introduce the reader to some possibly less known concepts rather than to fully extend upon them. For a deeper and more detailed view of the ideas presented, we direct the interested reader towards our list of references, which provide significantly more information.
@@ -219,7 +217,7 @@ The grammar of \textit{triple insertion}, as its name suggests, simply inserts i
 \todo{Counter-Example}
 Despite its compact size (and inarguable naivety), our first grammar is nevertheless relatively expressive. The prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words \todo{that exhibit this characteristic..}.
 \subsection{Adding States: Meta-Grammars}
-The underwhelming performance of our first attempt signaled for the necessity of more expressive states that would allow for more complex, "longer range" interactions. Intuitively, we imagined a convention by which certain new states would exist. Through controlled interactions, pairs of these new, "incomplete" states could allow parts of words to propagate through the rules until they eventually met their closures or were transformed into a single, new state. In that spirit, we defined the six states of \todo{cross-reference table}. One key difference is that our states may describe strings of arbitrary length, with the polarity now signifying whether the state is carrying an extra character or missing one instead.
+The underwhelming performance of our first attempt signaled for the necessity of more expressive states that would allow for more complex, "longer range" interactions. Intuitively, we imagined a convention by which certain new states would exist. Through controlled interactions, pairs of these new, "incomplete" states could allow parts of words to propagate through the rules until they eventually met their closures or were transformed into a single, new state. In that spirit, we defined the six states of \todo{cross-reference table}. One key difference is that our states may describe strings of arbitrary length, with the polarity now signifying whether the state is carrying an extra character or missing one instead (or having two extra characters, equivallently).
 
 In hindsight, we were able to identify a differently represented version of our idea in the growth rules, reaffirming our initial idea that these new states were indeed sound and necessary. The added expressivity, however, came at a cost of rapid rule expansion. Each of the new states could now (potentially) interact with every other, and their means of interaction could become convoluted and hard to decipher or write down. To overcome this obstacle we needed to be able to describe our rules at a slightly more abstract level. For instance, a state $A^{+}(x,y)$ (which now models not just the terminal $a$ but rather an intermediate state for which $ \# b(xy) = \# c(xy) = \# a(xy)-1$), could interact with a $B^{+}(z,w)$ to produce a $C^{-}$ in any of the following ways.
 \todo{ways}
@@ -227,15 +225,20 @@ In hindsight, we were able to identify a differently represented version of our 
 Note that for each pair interaction, different constraints pertaining to the order of the permuted concatenated strings need to be preserved, to account for (D2). In the example above, for instance, the internal order of each state's tuple is crucial, but also the external order enforced by the particular pair (ie. the extra $a$ must come before the extra $b$). For that purpose we had to define a method that automatically generates all the allowable permutations, thereby reducing the manual labour required to transcribe and debug rules. 
 \todo{define all o}
 
-This additional abstraction, however, is not enough on its own. We still needed the ability to enforce additional constraints related not to the order but rather the positions of concatenated strings. To make this clear, let us present the unique case of $B^{-}$. Unlike other negative states, $B^{-}(x,y)$ has no direct closure unless we actually know it to contain its extra $a$ in the left-side string $x$ and its extra $c$ in $y$. In that case alone can we insert the missing $b$ (obtained from a $B^{+}(z,w)$ between $x$ and $y$. But in order to automatically generate $B^{-}$ states for which this additional condition holds, we need to keep note of the origin of the extra $a$ and $c$, and filter out these rules generated by \todo{all o}. 
+This additional abstraction, however, is not enough on its own. We still needed the ability to enforce additional constraints related not to the order but rather the positions of concatenated strings. To make this clear, let us present the unique case of $B^{-}$. Unlike other negative states, $B^{-}(x,y)$ has no direct closure unless we actually know it to contain its extra $a$ in the left-side string $x$ and its extra $c$ in $y$. In that case alone can we insert the missing $b$ (obtained from a $B^{+}(z,w)$ between $x$ and $y$. But in order to automatically generate $B^{-}$ states for which this additional condition holds, we need to keep note of the origin of the extra $a$ and $c$, and filter out the rules generated by \todo{all o} accordingly. 
 \todo{define all c}
 
-The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lowest level of grammars to the higher level of meta-grammars, or grammars of grammars. 
+The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lowest level of grammars to the higher level of \textit{meta-grammars}, or grammars of grammars. 
 
 \subsection{Refining States: Rule Inference}
+Perhaps expectedly, the improved performance of our new approach again proved insufficient to completely parse $D^3$. New problems started arising when trying to solve longer words; even though they were sound, our rules failed to make full use of the expressivity that a 2-MCFG allows. We soon realized that we have over-constrained our rules by making them comply to the worst-case scenario. Following the example of \todo{2.2?}, if we had kept memory of the position of $a$ in $A^{+}(x,y)$, we could allow new rules to exist, such as \todo{rule} in the case of $a$ in $x$. Splitting each state into multiple different, \textit{refined} states that now provide knowledge of their extra characters' positions, we could model vastly more interactions.
 
+At this point, the abstraction offered by our meta-grammars did not cover our needs anymore. The same difficulty that we had encountered before was prominent once more, except now at an even-higher level. Transcribing meta-rules and proof-reading through them was very time consuming and draining, and hindered our progress. In order to test a new hypothesis pertaining to the refined states we would again have to go through a lot of arid work.
 
+As the ultimate solution for flexible grammar creation, we designed a system that can automatically create a full-blown 2-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that describes (up to an extend) the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of thοse interactions, whose resulting descriptor is matched with a state, we can now automatically infer the rule.
+\todo{Algorithm}
 
+\todo{example}
 \section{Road to completeness}
 Aut saepe voluptatem ipsa. At quae voluptatem quo unde qui a. Commodi omnis quae id doloribus qui et voluptas maxime.
 
