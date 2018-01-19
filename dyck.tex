@@ -12,6 +12,12 @@
 \colorlet{CodeBg}{gray!90}
 \usepackage{color, colortbl}
 \definecolor{Gray}{rgb}{0.9,0.9,0.9}
+\definecolor{bblue}{HTML}{4F81BD}
+\definecolor{rred}{HTML}{C0504D}
+\definecolor{ggreen}{HTML}{9BBB59}
+\definecolor{ppurple}{HTML}{9F4C7C}
+\definecolor{pblack}{HTML}{000000}
+\definecolor{pyellow}{HTML}{FFFF66}
 % Graphs
 \usepackage{tikz}
 \usetikzlibrary{calc}
@@ -436,27 +442,152 @@ As the peak of our efforts, we replace non-terminals with their refined versions
 Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
 
 Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
-
-\begin{center}
+\\
+\begin{figure}[h!]
+% Rule size
 \begin{tikzpicture}
-\begin{axis}[
-ybar,
-enlargelimits=0.15,
-legend style={at={(0.5,-0.15)},
-anchor=north,legend columns=-1},
-ylabel={\#participants},
-symbolic x coords={tool8,tool9,tool10},
-xtick=data,
-nodes near coords,
-nodes near coords align={vertical},
-]
-\addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
-\addplot coordinates {(tool8,4) (tool9,4) (tool10,4)};
-\addplot coordinates {(tool8,1) (tool9,1) (tool10,1)};
-\legend{used,understood,not understood}
-\end{axis}
+    \begin{axis}[
+        width  = 0.52*\textwidth,
+        height = 6cm,
+        major x tick style = transparent,
+        ybar=2*\pgflinewidth,
+        bar width=3pt,
+        ymajorgrids = true,
+        ylabel = {\textsc{Rule size}},
+        every axis x label/.style={
+  			  at={(ticklabel* cs:1.05)},
+  			  anchor=west,
+  			  },
+			every axis y label/.style={at={(current axis.north)},above=1mm},
+        symbolic x coords={$n=2$,$n=3$,$n=4$,$n=5$,$n=6$},
+        xtick = data,
+        scaled y ticks = false,
+        enlarge x limits=0.1,
+        ymin=0,
+        legend cell align=left,
+        legend style={
+        		at={(0.5,-0.15)},
+				anchor=north,
+				legend columns=-1
+			},
+    ]
+        \addplot[style={bblue,fill=bblue,mark=none}]
+            coordinates {($n=2$, 1.0) ($n=3$,1.0) ($n=4$,1.0) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={rred,fill=rred,mark=none}]
+             coordinates {($n=2$,1.123) ($n=3$,0.85) ($n=4$,1.09) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={ggreen,fill=ggreen,mark=none}]
+             coordinates {($n=2$,0.92) ($n=3$,0.56) ($n=4$,0.95) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={ppurple,fill=ppurple,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             
+        \addplot[style={pblack,fill=pblack,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             
+        \addplot[style={pyellow,fill=pyellow,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+    \end{axis}
 \end{tikzpicture}
-\end{center}
+\\[12pt]
+% Counter-examples
+\begin{tikzpicture}
+    \begin{axis}[
+        width  = 0.52*\textwidth,
+        height = 6cm,
+        major x tick style = transparent,
+        ybar=2*\pgflinewidth,
+        bar width=3pt,
+        ymajorgrids = true,
+        ylabel = {\textsc{Counter-examples}},
+        every axis x label/.style={
+  			  at={(ticklabel* cs:1.05)},
+  			  anchor=west,
+  			  },
+			every axis y label/.style={at={(current axis.north)},above=1mm},
+        symbolic x coords={$n=2$,$n=3$,$n=4$,$n=5$,$n=6$},
+        xtick = data,
+        scaled y ticks = false,
+        enlarge x limits=0.1,
+        ymin=0,
+        legend cell align=left,
+        legend style={
+        		at={(0.5,-0.15)},
+				anchor=north,
+				legend columns=-1
+			},
+    ]
+        \addplot[style={bblue,fill=bblue,mark=none}]
+            coordinates {($n=2$, 10.0) ($n=3$,10.0) ($n=4$,10.0) ($n=5$,10.0) ($n=6$,10.0)};
+
+        \addplot[style={rred,fill=rred,mark=none}]
+             coordinates {($n=2$,1.123) ($n=3$,0.85) ($n=4$,1.09) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={ggreen,fill=ggreen,mark=none}]
+             coordinates {($n=2$,0.92) ($n=3$,0.56) ($n=4$,0.95) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={ppurple,fill=ppurple,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             
+        \addplot[style={pblack,fill=pblack,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             
+        \addplot[style={pyellow,fill=pyellow,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+
+    \end{axis}
+\end{tikzpicture}
+\\[12pt]
+% Computation Time
+\begin{tikzpicture}
+    \begin{axis}[
+        width  = 0.52*\textwidth,
+        height = 6cm,
+        major x tick style = transparent,
+        ybar=2*\pgflinewidth,
+        bar width=3pt,
+        ymajorgrids = true,
+        ylabel = {\textsc{Computation Time} \small (sec)},
+        every axis x label/.style={
+  			  at={(ticklabel* cs:1.05)},
+  			  anchor=west,
+  			  },
+			every axis y label/.style={at={(current axis.north)},above=1mm},
+        symbolic x coords={$n=2$,$n=3$,$n=4$,$n=5$,$n=6$},
+        xtick = data,
+        scaled y ticks = false,
+        enlarge x limits=0.1,
+        ymin=0,
+        legend cell align=left,
+        legend style={
+        		at={(0.5,-0.15)},
+				anchor=north,
+				legend columns=-1
+			},
+    ]
+        \addplot[style={bblue,fill=bblue,mark=none}]
+            coordinates {($n=2$, 10.0) ($n=3$,10.0) ($n=4$,10.0) ($n=5$,10.0) ($n=6$,10.0)};
+
+        \addplot[style={rred,fill=rred,mark=none}]
+             coordinates {($n=2$,1.123) ($n=3$,0.85) ($n=4$,1.09) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={ggreen,fill=ggreen,mark=none}]
+             coordinates {($n=2$,0.92) ($n=3$,0.56) ($n=4$,0.95) ($n=5$,1.0) ($n=6$,1.0)};
+
+        \addplot[style={ppurple,fill=ppurple,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             
+        \addplot[style={pblack,fill=pblack,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             
+        \addplot[style={pyellow,fill=pyellow,mark=none}]
+             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+        \legend{G$_0$,G$_1$,G$_2$,G$_3$,G$_4$,G$_5$}
+    \end{axis}
+\end{tikzpicture}
+\caption{Performance measures}
+\end{figure}
 
 \section{Road to completeness}
 As the above results suggest, despite our best efforts the problem is yet unsolved. In this chapter we present a collection of unexplored ideas which we consider noteworthy. These ideas are related to the concept of formally concluding the completeness of a grammar, bypassing the computational problem of parsing through words in search of an example the tested grammar fails to generate.
