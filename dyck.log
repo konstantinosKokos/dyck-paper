@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.25)  18 JAN 2018 22:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.25)  19 JAN 2018 08:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -594,8 +594,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 135--137
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[2] [3]
-Overfull \hbox (5.5175pt too wide) in paragraph at lines 225--226
+[2]
+Underfull \hbox (badness 1189) in paragraph at lines 208--209
+\OT1/ptm/m/n/10 first gram-mar is nev-er-the-less rel-a-tively ex-pres-sive. Th
+e
+ []
+
+[3]
+Overfull \hbox (5.5175pt too wide) in paragraph at lines 226--227
 []\OT1/ptm/m/n/10 At this point, the ab-strac-tion of-fered by our meta-grammar
 s
  []
@@ -603,10 +609,10 @@ s
 Missing character: There is no Î in font ptmr7t!
 Missing character: There is no ¿ in font ptmr7t!
 
-Underfull \vbox (badness 2189) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
-Overfull \hbox (1.63765pt too wide) in paragraph at lines 247--248
+Overfull \hbox (1.63765pt too wide) in paragraph at lines 253--254
 \OT1/ptm/m/n/10 Aspernatur fugit autem numquam cor-poris re-pel-len-dus quasi.
  []
 
@@ -636,7 +642,7 @@ s/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></
 usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texl
 ive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/urw/times/utmri8a.pfb>
-Output written on dyck.pdf (5 pages, 175046 bytes).
+Output written on dyck.pdf (5 pages, 175658 bytes).
 PDF statistics:
  84 PDF objects out of 1000 (max. 8388607)
  61 compressed objects within 1 object stream

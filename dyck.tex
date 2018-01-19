@@ -49,7 +49,7 @@ Borrowing notation from \todo{Kazanawa}, we define the $MIX_d$ language as the l
 \end{itemize}
 where $ \#x(w)$ refers to the number of occurrences of symbol $x$ within word $w$.
 \paragraph{Dyck Language}
-We use $D^n$ to refer to the Dyck language over the same alphabet. $D^d$ is defined as a subset of $MIX_d$, whose words $w$ abide to one additional constraint:
+We use $D^d$ to refer to the Dyck language over the same alphabet. $D^d$ is defined as a subset of $MIX_d$, whose words $w$ abide to one additional constraint:
 \begin{itemize}
 \item[(D2)] For every prefix $v$ of $w$, $ \#a_i(v) \geq \#a_j(v) \ \forall i, j \ \in d$ such that $i < j$.
 \end{itemize}
@@ -115,7 +115,7 @@ We can then picture Dyck words as routes starting from $(0,0)$. (D1) means that 
     \draw [red, ->, thick] (0,1) -- node[below] {\tiny{(2)}} (1,0);
     \draw [blue, ->, thick] (1,0) -- node[left] {\tiny{(3)}} (1,1);
     \draw [blue, ->, thick] (1,1) -- node[left] {\tiny{(4)}} (1,2);
-	\draw [red, ->, thick] (1,2) -- (2,1);
+	\draw [red, ->, thick] (1,2) -- node[below] {\tiny{(5)}} (2,1);
 	%\draw [green, ->, thick] (2,1) -- (1,1);
 	\draw [red, ->, thick] (1,1) -- node[below] {\tiny{(7)}} (2,0);
 	\draw [blue, ->, thick] (2,0) -- node[left] {\tiny{(8)}} (2,1);
@@ -194,16 +194,17 @@ $d \backslash n$ & 2 & 3 & 4 & 5 & 6\\
 \paragraph{Non-wellnestedness}
 The property of well-nestedness can be informally described as the absence of rules that permute the tuples of interacting states in such a way that their corresponding dependency trees interleave \todo{Joshi 1997}. A more formal definition is given by \todo{Salvati, MIX}, which we will not include. In the case of $D^3$, there seem to exist cross-serial dependencies, violating the above constraint, and rendering $D^3$ non-wellnested.
 
-\section{Modeling}
+\section{Modeling Techniques}
 Having established the necessary vocabulary, we can now begin tackling the elusive problem of parsing $D^3$ via a 2-MCFG. This chapter's contents follow a chronological order, tracking our progressively larger, more complex and more abstract grammars.
 \subsection{Triple Insertion}
-During our early days of initiation to the world of $D^3$, the problem seemed only as a natural continuation to (much simpler) ones we had encountered before. With its difficulty not immediately apparent, our first modeling attempt was rather naive. Yet despite its naivety, it is still a relevant component of the grammars to follow, so we present it here.
+During our early days of initiation to the world of $D^3$, the problem seemed only as a natural continuation to the (much simpler) ones we had encountered before. With its difficulty not immediately apparent, our first modeling attempt was rather naive. Yet despite its naivety, it is still a relevant component of the grammars to follow, so we present it here.
 
 The grammar of \textit{triple insertion}, as its name suggests, simply inserts in order the three alphabet symbols \textit{a, b} and \textit{c} in any way possible given a non-terminal state $W$ (for \textit{word}) consisting of the tuple $(x,y)$. This non-terminal produces a variety of tuples that respect both (D1) and (D2). The end-word is produced through the concatenation of $(x,y)$ as produced by a single-arity state $S(xy)$.
 
 \todo{Grammar}
 
 \todo{Counter-Example}
+
 Despite its compact size (and inarguable naivety), our first grammar is nevertheless relatively expressive. The prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words \todo{that exhibit this characteristic..}.
 \subsection{Adding States: Meta-Grammars}
 The underwhelming performance of our first attempt signaled for the necessity of more expressive states that would allow for more complex, "longer range" interactions. Intuitively, we imagined a convention by which certain new states would exist. Through controlled interactions, pairs of these new, "incomplete" states could allow parts of words to propagate through the rules until they eventually met their closures or were transformed into a single, new state. In that spirit, we defined the six states of \todo{cross-reference table}. One key difference is that our states may describe strings of arbitrary length, with the polarity now signifying whether the state is carrying an extra character or missing one instead (or having two extra characters, equivallently).
@@ -214,7 +215,7 @@ In hindsight, we were able to identify a differently represented version of our 
 Note that for each pair interaction, different constraints pertaining to the order of the permuted concatenated strings need to be preserved, to account for (D2). In the example above, for instance, the internal order of each state's tuple is crucial, but also the external order enforced by the particular pair (ie. the extra $a$ must come before the extra $b$). For that purpose we had to define a method that automatically generates all the allowable permutations, thereby reducing the manual labour required to transcribe and debug rules. 
 \todo{define all o}
 
-This additional abstraction, however, is not enough on its own. We still needed the ability to enforce additional constraints related not to the order but rather the positions of concatenated strings. To make this clear, let us present the unique case of $B^{-}$. Unlike other negative states, $B^{-}(x,y)$ has no direct closure unless we actually know it to contain its extra $a$ in the left-side string $x$ and its extra $c$ in $y$. In that case alone can we insert the missing $b$ (obtained from a $B^{+}(z,w)$ between $x$ and $y$. But in order to automatically generate $B^{-}$ states for which this additional condition holds, we need to keep note of the origin of the extra $a$ and $c$, and filter out the rules generated by \todo{all o} accordingly. 
+This additional abstraction, however, is not enough on its own. We still needed the ability to enforce additional constraints related not to the order but rather the positions of concatenated strings. To make this clear, let us present the unique case of $B^{-}$. Unlike other negative states, $B^{-}(x,y)$ has no direct closure unless we actually know it to contain its extra $a$ in the left-side string $x$ and its extra $c$ in $y$ (we refer to this distinction between a position-blind and a position-aware state as \textit{refinement}). In that case alone can we insert the missing $b$ (obtained from a $B^{+}(z,w)$ between $x$ and $y$. But in order to automatically generate $B^{-}$ states for which this additional condition holds, we need to keep note of the origin of the extra $a$ and $c$, and filter out the rules generated by \todo{all o} accordingly. 
 \todo{define all c}
 
 The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lowest level of grammars to the higher level of \textit{meta-grammars}, or grammars of grammars. 
@@ -229,20 +230,25 @@ As the ultimate solution for flexible grammar creation, we designed a system tha
 
 \todo{example}
 
-\section{Implementation \& Results}
+\section{Implementation}
+Enabled by the machinery described in the previous chapter we performed a multitude of tests using different grammars. In this chapter we describe a few of these grammars that we deem as milestones in our progression, in ascending order of complexity. We also present some statistics to allow for a direct comparison to be made between them.
 \subsection{Grammars}
-\paragraph{Grammar 1}
-Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
+\paragraph{Triple Insertion}
+This very simple grammar consists of simply the rules of triple-insertion on a single non-terminal state $W(x,y)$, as described in chapter 2.
 
-Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
-\paragraph{Grammar 2}
-Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
+\todo{grammar in all o notation}
+\paragraph{Adding word composition}
+Benefiting from the added expressivity of \todo{all o}, we can extend the previous grammar with a meta-rule that allows two non-terminals $W(x,y)$, $W(z,w)$ to interact with another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated.
 
-Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
-\paragraph{Grammar 3}
-Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
+\todo{extra rule in all o}
+\paragraph{Incomplete words}
+This grammar largely expands upon the concept of state interaction of the previous grammar, replacing the idea of triple insertion with the use of non-terminals that correspond to types of incomplete words. It was only after we had written it that we realized that the rules of this grammar are actually equivalent to the closure and double-input, single-output rules of the growth algorithm.
 
-Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
+\todo{grammar} 
+\paragraph{Adding back triple insertion}
+Surprisingly, cases manageable by triple insertion could not be solved by the last grammar despite its elegance. After some thought, we realized that triple insertion is unique in the sense that it can insert three different terminals each at a different position, something that no other pair interaction can directly accomplish. We thus allowed triple insertion back into our last grammar, now at the level of each new state.
+
+\todo{grammar}
 \subsection{Results \& Comparisons}
 Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
 
@@ -253,6 +259,7 @@ As the above results suggest, despite our best efforts the problem is yet unsolv
 
 \subsection{First-match policy and Relinking}
 Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$, where $x_i$ the i-th occurrence of symbol $x$ in $w$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$ in such a way that the triplet inserted always corresponds to a triplet matched by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative- the expressiveness provided by a 2-MCFG does not allow for the rather arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$ (ie. all different comma positions $i$ for $i \in 0,1...3n$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
+\todo{examples}
 
 However, if rules existed that would allow for match-making and breaking, ie. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together. This might be an interesting prospect to look into. 
 \subsection{Growth Rules}
