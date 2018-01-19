@@ -17,6 +17,7 @@
 \usetikzlibrary{calc}
 \usetikzlibrary{trees}
 \usetikzlibrary{positioning}
+\usepackage{pgfplots}
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
 \newcommand{\Order}[5]{
@@ -283,6 +284,27 @@ As the peak of our efforts, we replace non-terminals with their refined versions
 Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
 
 Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+ybar,
+enlargelimits=0.15,
+legend style={at={(0.5,-0.15)},
+anchor=north,legend columns=-1},
+ylabel={\#participants},
+symbolic x coords={tool8,tool9,tool10},
+xtick=data,
+nodes near coords,
+nodes near coords align={vertical},
+]
+\addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
+\addplot coordinates {(tool8,4) (tool9,4) (tool10,4)};
+\addplot coordinates {(tool8,1) (tool9,1) (tool10,1)};
+\legend{used,understood,not understood}
+\end{axis}
+\end{tikzpicture}
+\end{center}
 
 \section{Road to completeness}
 As the above results suggest, despite our best efforts the problem is yet unsolved. In this chapter we present a collection of unexplored ideas which we consider noteworthy. These ideas are related to the concept of formally concluding the completeness of a grammar, bypassing the computational problem of parsing through words in search of an example the tested grammar fails to generate.
