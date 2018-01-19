@@ -1,0 +1,10 @@
+*.swp
+.ipynb_checkpoints/
+*.pyc
+*.aux
+*.log
+*.out
+*.gz
+*.dvi
+.idea/
+**/_minted*/
