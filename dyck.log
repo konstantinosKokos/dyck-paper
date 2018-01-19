@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.25)  19 JAN 2018 08:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.11.25)  19 JAN 2018 11:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -560,16 +560,12 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 31.
-
-Overfull \hbox (1.63765pt too wide) in paragraph at lines 32--34
-\OT1/ptm/m/n/10 Aspernatur fugit autem numquam cor-poris re-pel-len-dus quasi.
- []
-
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 35.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/it' tried instead on input line 35.
 LaTeX Font Info:    Try loading font information for OMS+ptm on input line 35.
+
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
@@ -578,7 +574,7 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 Missing character: There is no Ì in font ptmr7t!
 Missing character: There is no ˆ in font ptmr7t!
 
-Overfull \hbox (9.62755pt too wide) in paragraph at lines 59--60
+Overfull \hbox (9.62755pt too wide) in paragraph at lines 58--59
  \OT1/ptm/b/it/10 MCFL[] \OT1/ptm/m/n/10 Mul-ti-ple con-text free lan-guages, a
 b-bre-vi-ated MCFLs,
  []
@@ -587,6 +583,8 @@ b-bre-vi-ated MCFLs,
 
 
 ]
+Missing character: There is no - in font nullfont!
+
 Underfull \hbox (badness 10000) in paragraph at lines 135--137
 
  []
@@ -608,41 +606,51 @@ s
 
 Missing character: There is no Î in font ptmr7t!
 Missing character: There is no ¿ in font ptmr7t!
+Missing character: There is no Ã in font ptmr7t!
+Missing character: There is no ¶ in font ptmr7t!
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \hbox (badness 1371) in paragraph at lines 245--246
+ \OT1/ptm/b/it/10 G$[]$: In-com-plete words[] \OT1/ptm/m/n/10 This gram-mar lar
+gely ex-pands
+ []
 
 
-Overfull \hbox (1.63765pt too wide) in paragraph at lines 253--254
+Overfull \hbox (1.65407pt too wide) in paragraph at lines 259--260
+\OT1/ptm/m/n/10 sented in []ref-er-ence 2.3[]. $\OML/cmm/m/it/10 A[]\OT1/cmr/m/
+n/10 (\OML/cmm/m/it/10 x; y\OT1/cmr/m/n/10 )$ \OT1/ptm/m/n/10 is now split into
+ $\OML/cmm/m/it/10 A[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 x; y\OT1/cmr/m/n/10 )$
+ []
+
+
+Overfull \hbox (1.63765pt too wide) in paragraph at lines 261--262
 \OT1/ptm/m/n/10 Aspernatur fugit autem numquam cor-poris re-pel-len-dus quasi.
  []
 
-[4] [5
-
-] (./dyck.aux) ) 
+[4] [5] (./dyck.aux) ) 
 Here is how much of TeX's memory you used:
  13126 strings out of 494910
  255953 string characters out of 6179835
- 309240 words of memory out of 5000000
+ 310240 words of memory out of 5000000
  16118 multiletter control sequences out of 15000+600000
  37048 words of font info for 83 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  55i,11n,54p,1094b,675s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbo
-ls/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbol
-s/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/urw/times/utmri8a.pfb>
-Output written on dyck.pdf (5 pages, 175658 bytes).
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.en
+c}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on dyck.pdf (5 pages, 181084 bytes).
 PDF statistics:
  84 PDF objects out of 1000 (max. 8388607)
  61 compressed objects within 1 object stream
