@@ -12,12 +12,12 @@
 \colorlet{CodeBg}{gray!90}
 \usepackage{color, colortbl}
 \definecolor{Gray}{rgb}{0.9,0.9,0.9}
-\definecolor{bblue}{HTML}{4F81BD}
-\definecolor{rred}{HTML}{C0504D}
-\definecolor{ggreen}{HTML}{9BBB59}
-\definecolor{ppurple}{HTML}{9F4C7C}
+\definecolor{bblue}{HTML}{1D577A}
+\definecolor{rred}{HTML}{C03425}
+\definecolor{ggreen}{HTML}{8BB523}
+\definecolor{ppurple}{HTML}{6B1B7F}
 \definecolor{pblack}{HTML}{000000}
-\definecolor{pyellow}{HTML}{FFFF66}
+\definecolor{pyellow}{HTML}{C0B225}
 % Graphs
 \usepackage{tikz}
 \usetikzlibrary{calc}
@@ -26,12 +26,19 @@
 \usepackage{pgfplots}
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
+\newcommand{\w}[1]{\textit{"#1"}}
+\newcommand\s{\textsc}
+
 \newcommand{\Order}[5]{
 	\[
-	\mathcal{#1}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket^{(#5)}
+	\mathcal{#1}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket^{(#5)}.
 	\]
 }
+\newcommand{\Orderr}[5]{
+	\mathcal{#1}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket^{(#5)}.
+}
 \newcommand{\Ord}[4]{\Order{O}{#1}{#2}{#3}{#4}}
+\newcommand{\Or}[4]{\Orderr{O}{#1}{#2}{#3}{#4}}
 \newcommand{\Con}[4]{\Order{C}{#1}{#2}{#3}{#4}}
 
 \title{$D^3$ as a 2-MCFL}
@@ -97,7 +104,7 @@ Practically, the rectangular shape ensures constraint (D1), while the ascending 
     		\hline
 	    \end{tabular}
 	\end{tabular}
-  	\caption{Young tableau for \textit{abaabcbaaabcbcbccc}}
+  	\caption{Young tableau for \w{abaabcbaaabcbcbccc}}
 \end{table}
 
 \paragraph{Promotions and Orbits}
@@ -156,7 +163,7 @@ We can then picture Dyck words as routes starting from $(0,0)$. (1) means that e
     \draw[fill=orange,color=black] circle (0.75pt);
     \end{tikzpicture}
 \\
-\caption{The constrained walk of \textit{abaabcbaaabcbcbccc} with vector value assignments $\vec{v}_a = (1,0)$, $\vec{v}_b = (-1,1)$, $\vec{v}_c = (0,-1)$}
+\caption{The constrained walk of \w{abaabcbaaabcbcbccc} with vector value assignments $\vec{v}_a = (1,0)$, $\vec{v}_b = (-1,1)$, $\vec{v}_c = (0,-1)$}
 \end{figure}
 \paragraph{$A_2$ Combinatorial Spider Webs}
 The $A_2$ \textit{irreducible combinatorial spider web} is a category which \todo{Khu} defines as a planar directed graph $D$, with no multiple edges embedded in a disk that satisfies conditions W1 through W3:
@@ -374,12 +381,25 @@ Having established the necessary vocabulary, we can now begin tackling the elusi
 During our early days of initiation to the world of $D^3$, the problem seemed only as a natural continuation to the (much simpler) ones we had encountered before. With its difficulty not immediately apparent, our first modeling attempt was rather naive. Yet despite its naivety, it is still a relevant component of the grammars to follow, so we present it here.
 
 The grammar of \textit{triple insertion}, as its name suggests, simply inserts in order the three alphabet symbols \textit{a, b} and \textit{c} in any way possible given a non-terminal state $W$ (for \textit{word}) consisting of the tuple $(x,y)$. This non-terminal produces a variety of tuples that respect both (D1) and (D2). The end-word is produced through the concatenation of $(x,y)$ as produced by a single-arity state $S(xy)$.
+\begin{figure}[h!]
+\begin{align}
+\setcounter{equation}{0}
+\s{S}(xy) \longleftarrow \s{W}(x,y)&. \\
+\s{W}(\epsilon, xy\textbf{abc}) \longleftarrow \s{W}(x,y)&. \\
+\s{W}(\epsilon, x\textbf{a}y\textbf{bc}) \longleftarrow \s{W}(x,y)&. \\
+...... \nonumber \\
+\setcounter{equation}{59}
+\s{W}(\textbf{ab}x\textbf{c}y, \epsilon) \longleftarrow \s{W}(x,y)&. \\
+\s{W}(\textbf{abc}xy, \epsilon) \longleftarrow \s{W}(x,y)&. \\
+\s{W}(\epsilon, \textbf{abc})&. \\
+\s{W}(\textbf{a}, \textbf{bc})&. \\
+\s{W}(\textbf{ab}, \textbf{c})&. \\
+\s{W}(\textbf{abc}, \epsilon)&.
+\end{align}
+\caption{Grammar of triple insertions}
+\end{figure}
 
-\todo{Grammar}
-
-\todo{Counter-Example}
-
-Despite its compact size (and inarguable naivety), our first grammar is nevertheless relatively expressive. The prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words \todo{that exhibit this characteristic..}.
+Despite its compact size (and inarguable naivety), our first grammar is nevertheless relatively expressive. The prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words \todo{that exhibit this characteristic.. counter: aabbacbaccbc}.
 \subsection{Adding States: Meta-Grammars}
 The underwhelming performance of our first attempt signaled for the necessity of more expressive states that would allow for more complex, "longer range" interactions. Intuitively, we imagined a convention by which certain new states would exist. Through controlled interactions, pairs of these new, "incomplete" states could allow parts of words to propagate through the rules until they eventually met their closures or were transformed into a single, new state. In that spirit, we defined the six states of \todo{cross-reference table}. One key difference is that our states may describe strings of arbitrary length, with the polarity now signifying whether the state is carrying an extra character or missing one instead (or having two extra characters, equivallently).
 
@@ -388,18 +408,17 @@ In hindsight, we were able to identify a differently represented version of our 
 
 Note that for each pair interaction, different constraints pertaining to the order of the permuted concatenated strings need to be preserved, to account for (D2). In the example above, for instance, the internal order of each state's tuple is crucial, but also the external order enforced by the particular pair (ie. the extra $a$ must come before the extra $b$). For that purpose we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders over the tuple indices of its premises and the MCFG dimensionality, automatically generates all the allowable permutations. We thereby reduce the manual labour required to transcribe and debug individual rules.
 
-\Ord{\textsc{C}^-}{\textsc{A}^+, \textsc{B}^+}{x < y < z < w}{2}
+\Ord{\s{C}^-}{\s{A}^+, \s{B}^+}{x < y < z < w}{2}
 
 We introduce the concise mathematical notation depicted above, which demonstrates that a state $\textsc{C}^{+}$ can be produced by two states $\textsc{A}^{+}(x,y)$, $\textsc{B}^{+}(z,w)$ by any 2-element tuple concatenation that respects the order ($x$,$y$,$z$,$w$), ie. the tuple of $\textsc{C}^{-}$ may any of $(\epsilon, xyzw)$, $(x, yzw)$, $(xy,zw)$, $(xyz,w)$ or $(xyzw, \epsilon)$\footnote{By $\epsilon$ we denote the empty string}.
 
 This additional abstraction, however, is not enough on its own. We still needed the ability to enforce additional constraints related not to the order but rather the positions of concatenated strings. To make this clear, let us present the unique case of $B^{-}$. Unlike other negative states, $B^{-}(x,y)$ has no direct closure unless we actually know it to contain its extra $a$ in the left-side string $x$ and its extra $c$ in $y$ (we refer to this distinction between a position-blind and a position-aware state as \textit{refinement}). In that case alone can we insert the missing $b$ (obtained from a $B^{+}(z,w)$ between $x$ and $y$. But in order to automatically generate $B^{-}$ states for which this additional condition holds, we need to keep note of the origin of the extra $a$ and $c$, and filter out the rules generated by $\mathcal{O}$ accordingly. Similarly, we define $\mathcal{C}$ as a stricter version of $\mathcal{O}$, which constraints the rules according to the positions the premise tuples may occupy (after concatenation) in the conclusion's tuple.
 
-\Con{\textsc{B}^-}{\textsc{A}^+, \textsc{C}^+}{x_l < y_l, z_r < w_r}{2}
+\Con{\textsc{B}^-}{\textsc{A}^+, \textsc{C}^+}{x_l < y_l,\ z_r < w_r}{2}
 
 In the above notation, we illustrate that $\textsc{B}^{-}$ may be constructed from $\textsc{A}^{+}(x,y)$ and $\textsc{C}^{+}(z,w)$ only as long as the partial orders $(x,y)$ and $(z,w)$ are independently satisfied and $x$, $y$ are both placed on the left element of the new state's tuples, while $z$ and $w$ on the right. This of course only allows for $\textsc{C}^{-}$ to consist of the tuple $(xy, zw)$.
-\todo{declarative programming}
 
-The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lower level of grammars to the higher level of \textit{meta-grammars}, or grammars of grammars.
+The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lower level of grammars to the higher level of \textit{meta-grammars}, or grammars of grammars. This strikes a resemblance to the notion of \textit{declarative programming}, where one only cares about what needs to be computed, rather than how.
 
 \subsection{Refining States: Rule Inference}
 Perhaps expectedly, the improved performance of our new approach again proved insufficient to completely parse $D^3$. New problems started arising when trying to solve longer words; even though they were sound, our rules failed to make full use of the expressivity that a 2-MCFG allows. We soon realized that we have over-constrained our rules by making them comply to the worst-case scenario. Following the example of \todo{2.2?}, if we had kept memory of the position of $a$ in $A^{+}(x,y)$, we could allow new rules to exist, such as \todo{rule} in the case of $a$ in $x$. Splitting each state into multiple different, \textit{refined} states that now provide knowledge of their extra characters' positions, we could model vastly more interactions.
@@ -414,18 +433,52 @@ As the ultimate solution for flexible grammar creation, we designed a system tha
 \section{Implementation}
 Enabled by the machinery described in the previous chapter we performed a multitude of tests using different grammars. In this chapter we describe a few of these grammars that we deem as milestones of our progression, in ascending order of complexity. We also present some statistics to allow for a direct comparison to be made between them. For the purposes of this project we use a version of MCFParser [\todo{Ljunglöf}] as our backend, which we adapted to our needs\footnote{The original can be found at https://github.com/heatherleaf/MCFParser.py}.
 \subsection{Grammars}
+\todo{indexing tuples}
 \paragraph{G$_0$: Triple Insertion}
-This very simple grammar consists of simply the rules of triple-insertion on a single non-terminal state $W(x,y)$, as described in chapter 2.
+This very simple grammar consists of simply the rules of triple-insertion on a single non-terminal state $\s{W}(x,y)$, as described in chapter 2.
+\begin{align*}
+&\s{S}(xy) \longleftarrow \s{W}(x,y). \\
+&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
+&\Or{\s{W}}{\s{W}}{x < y,\ a < b < c}{2}
+\end{align*}
 
-\todo{grammar in all o notation}
 \paragraph{G$_1$: Adding word composition}
 Benefiting from the added expressivity of \todo{all o}, we can extend the previous grammar with a meta-rule that allows two non-terminals $W(x,y)$, $W(z,w)$ to interact with another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated.
+\begin{align*}
+&\Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
+\end{align*}
 
-\todo{extra rule in all o}
 \paragraph{G$_2$: Incomplete words}
 This grammar largely expands upon the concept of state interaction of the previous grammar, replacing the idea of triple insertion with the use of non-terminals that correspond to types of incomplete words. It was only after we had written it that we realized that the rules of this grammar are actually equivalent to the non-swapping rules of the growth algorithm.
+\begin{align*}
+&\s{S}(xy) \longleftarrow \s{W}(x,y). \\
+&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
+&\Or{\s{A}^+}{\epsilon}{a}{2} \\
+&\Or{\s{B}^+}{\epsilon}{b}{2} \\
+&\Or{\s{C}^+}{\epsilon}{c}{2} \\
+&\Or{\s{A}^-}{\epsilon}{b < c}{2} \\
+&\Or{\s{B}^-}{\epsilon}{a < c}{2} \\
+&\Or{\s{C}^-}{\epsilon}{a < b}{2} \\
+&\forall \s{K} \in \mathcal{S} \setminus \s{W}:\ \Or{\s{K}}{\s{K}, \s{W}}{x < y,\ z < w}{2}
+\end{align*}
 
-\todo{grammar}
+\ifx true false
+    [all_o(K, [K, W], [[x, y], [z, w]]) for K in all_states],
+    # A+
+    all_o('C-', ['A+', 'B+'], [[x, y, z, w]]),
+    all_o('B-', ['A+', 'C+'], [[x, y, z, w]]),
+    all_o(W, ['A+', 'A-'], [[x, y, z, w]]),
+    # B+
+    all_o('A-', ['B+', 'C+'], [[x, y, z, w]]),
+    # C+
+    # A-
+    # B-
+    all_o('C+', ['B-', 'A-'], [[x, y, z, w]]),
+    # C-
+    all_o(W, ['C-', 'C+'], [[x, y, z, w]]),
+    all_o('B+', ['C-', 'A-'], [[x, y, z, w]]),
+    all_o('A+', ['C-', 'B-'], [[x, y, z, w]]),
+\fi
 \paragraph{G$_3$: Re-adding triple insertion}
 Surprisingly, cases manageable by triple insertion could not be solved by the last grammar despite its elegance. After some thought, we realized that triple insertion is unique in the sense that it can insert three different terminals each at a different position, something that no other pair interaction can directly accomplish. We thus allowed triple insertion back into our last grammar, now at the level of each new state.
 
@@ -595,10 +648,38 @@ As the above results suggest, despite our best efforts the problem is yet unsolv
 \subsection{First-match policy and Relinking}
 Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$, where $x_i$ the i-th occurrence of symbol $x$ in $w$. We call this process of matching the \textit{first-match policy}.
 
-\todo{example}
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[every node/.style={anchor=base},xscale=.25,yscale=.4]
+\node (n0) at (0,0) {$a$};
+\node (n1) at (1,0) {$b$};
+\node (n2) at (2,0) {$a$};
+\node (n3) at (3,0) {$b$};
+\node (n4) at (4,0) {$a$};
+\node (n5) at (5,0) {$c$};
+\node (n6) at (6,0) {$b$};
+\node (n7) at (7,0) {$c$};
+\node (n8) at (8,0) {$a$};
+\node (n9) at (9,0) {$b$};
+\node (n10) at (10,0) {$c$};
+\node (n11) at (11,0) {$c$};
+
+\draw (n0) edge [rred, bend left=90] (n1);
+\draw (n1) edge [rred, bend right=90] (n5);
+
+\draw (n2) edge [ggreen, bend left=90] (n3);
+\draw (n3) edge [ggreen, bend right=90] (n7);
+
+\draw (n4) edge [bblue, bend left=90] (n6);
+\draw (n6) edge [bblue, bend right=90] (n10);
+
+\draw (n8) edge [pyellow, bend left=90] (n9);
+\draw (n9) edge [pyellow, bend right=90] (n11);
+\end{tikzpicture}
+\caption{First-match policy for \w{ababacbcabcc}}
+\end{figure}
 
 The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$ in such a way that the triplet inserted always corresponds to a triplet matched by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative- the expressiveness provided by a 2-MCFG does not allow for the rather arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$ (ie. all different comma positions $i$ for $i \in 0,1...3n$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property.
-\todo{examples}
 
 However, if rules existed that would allow for match-making and breaking, ie. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together. This might be an interesting prospect to look into.
 \subsection{Growth Rules}
