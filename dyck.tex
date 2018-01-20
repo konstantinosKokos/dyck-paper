@@ -7,6 +7,8 @@
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{epigraph}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 % Colors
 \usepackage{xcolor}
 \colorlet{CodeBg}{gray!90}
@@ -384,13 +386,13 @@ The grammar of \textit{triple insertion}, as its name suggests, simply inserts i
 \begin{figure}[h!]
 \begin{align}
 \setcounter{equation}{0}
-\s{S}(xy) \longleftarrow \s{W}(x,y)&. \\
-\s{W}(\epsilon, xy\textbf{abc}) \longleftarrow \s{W}(x,y)&. \\
-\s{W}(\epsilon, x\textbf{a}y\textbf{bc}) \longleftarrow \s{W}(x,y)&. \\
+\s{S}(xy) \leftarrow \s{W}(x,y)&. \\
+\s{W}(\epsilon, xy\textbf{abc}) \leftarrow \s{W}(x,y)&. \\
+\s{W}(\epsilon, x\textbf{a}y\textbf{bc}) \leftarrow \s{W}(x,y)&. \\
 ...... \nonumber \\
 \setcounter{equation}{59}
-\s{W}(\textbf{ab}x\textbf{c}y, \epsilon) \longleftarrow \s{W}(x,y)&. \\
-\s{W}(\textbf{abc}xy, \epsilon) \longleftarrow \s{W}(x,y)&. \\
+\s{W}(\textbf{ab}x\textbf{c}y, \epsilon) \leftarrow \s{W}(x,y)&. \\
+\s{W}(\textbf{abc}xy, \epsilon) \leftarrow \s{W}(x,y)&. \\
 \s{W}(\epsilon, \textbf{abc})&. \\
 \s{W}(\textbf{a}, \textbf{bc})&. \\
 \s{W}(\textbf{ab}, \textbf{c})&. \\
@@ -421,10 +423,55 @@ Perhaps expectedly, the improved performance of our new approach again proved in
 
 At this point, the abstraction offered by our meta-grammars did not cover our needs anymore. The same difficulty that we had encountered before was prominent once more, except now at an even-higher level. Transcribing meta-rules and proofreading through them was very time consuming and draining, and hindered our progress. In order to test a new hypothesis pertaining to the refined states we would again have to go through a lot of arid work.
 
-As the ultimate solution for flexible grammar creation, we designed a system that can automatically create a full-blown 2-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that describes (up to an extend) the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of thοse interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
-\todo{Algorithm}
+As the ultimate solution for flexible grammar creation, we designed a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that describes (up to an extend) the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of thοse interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
 
-\todo{example}
+Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors}.
+
+\begin{algorithm}
+\caption{ARIS: Automatic Rule Inference System}\label{euclid}
+\begin{algorithmic}
+\Procedure{aris}{$\mathcal{D}$}
+	\For{$X \in dom(\mathcal{D})$}
+		\State $(d_1,\dots ,d_n) \leftarrow \mathcal{D}(X)$
+		\State \textbf{yield} $X(d_1,\dots,d_n).$
+	\EndFor
+	\For{$X,\ Y \in dom(\mathcal{D})^2$}
+		\State $X_{ord} \leftarrow t_{11}<\dots<t_{1n}$ 
+		\State $Y_{ord} \leftarrow t_{21}<\dots<t_{2n}$ 
+		\State $new\_order \leftarrow \Or{\_}{X,Y}{X_{ord}, Y_{ord}}{2}$
+		\For{$(d_1,...,d_n) \in new\_order$}
+			\For{$S' \in \textsc{eliminate}((d_1,\dots ,d_n), \mathcal{D})$}
+				\State \textbf{yield} $S'(d_1,\dots ,d_n) \leftarrow X, Y.$
+			\EndFor
+		\EndFor
+	\EndFor
+\EndProcedure
+\\
+\Procedure{eliminate}{$(d_1,\dots ,d_n), \mathcal{D}$}
+	\For{$matches \in \textsc{match\_all}(t_1, ..., t_n)$}
+		\For{$i \in 0\dots n/3$}
+			\For{$S' \in \textsc{remove\_all}(matches, i)$}
+				\If {$S' \in codom(\mathcal{D})$}
+					\State \textbf{yield} $S'$
+				\EndIf				
+			\EndFor
+		\EndFor
+	\EndFor
+\EndProcedure
+\\
+\Procedure{match\_all}{$t_1,...,t_n$}
+	\State \textbf{return} \textit{all possible ways to match a,b,c triplets}
+\EndProcedure
+\\
+\Procedure{remove\_all}{$matches, i$}
+	\State \textbf{return} \textit{all possible ways to annihilate i matches}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\todo{computationally infeasible combinations of arbitrary number of states}
+
+\todo{you can just give state descriptors now!!}
 
 \section{Implementation}
 Enabled by the machinery described in the previous chapter we performed a multitude of tests using different grammars. In this chapter we describe a few of these grammars that we deem as milestones of our progression, in ascending order of complexity. We also present some statistics to allow for a direct comparison to be made between them. For the purposes of this project we use a version of MCFParser [\todo{Ljunglöf}] as our backend, which we adapted to our needs\footnote{The original can be found at https://github.com/heatherleaf/MCFParser.py}.
@@ -433,7 +480,7 @@ In the grammars below, when applying meta-rules, we consider $t_{ij}$ to be the 
 \paragraph{G$_0$: Triple Insertion}
 This very simple grammar consists of simply the rules of triple-insertion on a single non-terminal state $\s{W}(x,y)$, as described in chapter 2. Using the $\mathcal{O}$ abstraction, this grammar can be simply expressed as:
 \begin{align*}
-&\s{S}(xy) \longleftarrow \s{W}(x,y). \\
+&\s{S}(xy) \leftarrow \s{W}(x,y). \\
 &\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
 &\Or{\s{W}}{\s{W}}{t_{11} < t_{12},\ a < b < c}{2}
 \end{align*}
@@ -446,7 +493,7 @@ Benefiting from the added expressivity of $\mathcal{O}$, we can extend the previ
 \paragraph{G$_2$: Incomplete words}
 This grammar largely expands upon the concept of state interaction of the previous grammar, replacing the idea of triple insertion with the use of non-terminals that correspond to types of incomplete words. There is a very clear and direct correspondence between this grammar and the non-swapping rules of the growth algorithm.
 \begin{align*}
-&\s{S}(xy) \longleftarrow \s{W}(x,y). \\
+&\s{S}(xy) \leftarrow \s{W}(x,y). \\
 &\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
 &\Or{\s{A}^+}{\epsilon}{a}{2} \\
 &\Or{\s{B}^+}{\epsilon}{b}{2} \\
