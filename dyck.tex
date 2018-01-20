@@ -31,11 +31,11 @@
 
 \newcommand{\Order}[5]{
 	\[
-	\mathcal{#1}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket^{(#5)}.
+	\mathcal{#1}_{#5}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket.
 	\]
 }
 \newcommand{\Orderr}[5]{
-	\mathcal{#1}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket^{(#5)}.
+	\mathcal{#1}_{#5}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket.
 }
 \newcommand{\Ord}[4]{\Order{O}{#1}{#2}{#3}{#4}}
 \newcommand{\Or}[4]{\Orderr{O}{#1}{#2}{#3}{#4}}
@@ -461,8 +461,9 @@ Where $\mathcal{S}$ the set of states defined within this grammar (ie. $\mathcal
 \paragraph{G$_3$: Re-adding triple insertion}
 Surprisingly, cases manageable by triple insertion could not be solved by the last grammar despite its elegance. After some thought, we realized that triple insertion is unique in the sense that it can insert three different terminals each at a different position, something that no other pair interaction can directly accomplish. We thus allowed triple insertion back into our last grammar, now at the level of each new state. To achieve this, we added the meta-rules:
 \begin{align*}
+& \quad\quad\quad\quad \vdots \\
 &\forall \ \s{K} \in \mathcal{S} \setminus \s{W}:\\ 
-&\quad\quad\Or{\s{K}}{\s{K}, \s{W}}{t_{11} < t_{12},\ a < b < c}{2}
+&\quad\quad\Or{\s{K}}{\s{K}}{t_{11} < t_{12},\ a < b < c}{2}
 \end{align*}
 \paragraph{G$_4$: Generalizing triple insertion}
 The concept of triple insertion can be generalized; rather than simply adding terminals $a$, $b$ and $c$, we could add larger word segments through states $\s{A}^+$, $\s{B}^+$ and $s{C}^+$. To do so, we need to model the concurrent interaction of these three states with any other state. Our abstractions are actually able to manage that, so we test another grammar which replaces the triple insertion with a \textit{triple state insertion}.
@@ -477,8 +478,6 @@ As the peak of our efforts, we replace non-terminals with their refined versions
 Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
 
 Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
-
-\subsection{Untested Grammars}
 \begin{figure}[h!]
 % Rule size
 \begin{tikzpicture}
