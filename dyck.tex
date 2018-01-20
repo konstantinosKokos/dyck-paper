@@ -474,10 +474,8 @@ The concept of triple insertion can be generalized; rather than simply adding te
 \end{align*}
 \paragraph{G$_5$: Refined non-terminals}
 As the peak of our efforts, we replace non-terminals with their refined versions as presented in \todo{reference 2.3}. $A^{+}(x,y)$ is now split into $A^{+}_{left}(x,y)$ and $A^{+}_{right}(x,y)$, with the extra $a$ residing in $x$ and $y$ in each case respectively.
-\subsection{Results \& Comparisons}
-Aspernatur fugit autem numquam corporis repellendus quasi. Et nisi veritatis consequatur adipisci iure. Sint quos aspernatur ea iste est.
-
-Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem voluptatem occaecati libero. Aperiam nostrum id sed voluptatibus fuga. Culpa commodi molestiae molestiae corrupti nam. Sapiente quo commodi architecto exercitationem id ad. Non optio eos perferendis.
+\subsection{Results}
+We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$. The charts reveal two obvious trends- as grammars get more complex, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with dramatically exploding computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (recall that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
 \begin{figure}[h!]
 % Rule size
 \begin{tikzpicture}
@@ -506,24 +504,25 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
 				legend columns=-1
 			},
     ]
-    
+		% triple in    
     	\addplot[style={bblue,fill=bblue,mark=none}]
-            coordinates {($ $, 0.032)};
+            coordinates {($ $, 65)};
 
         \addplot[style={rred,fill=rred,mark=none}]
-             coordinates {($ $,1.123)};
+             coordinates {($ $,0)};
 
         \addplot[style={ggreen,fill=ggreen,mark=none}]
-             coordinates {($ $,0.92)};
+             coordinates {($ $,0)};
 
+		% meta-3
         \addplot[style={ppurple,fill=ppurple,mark=none}]
-             coordinates {($ $,0.63)};
-             
+             coordinates {($ $,690)};
+        % meta-4   
         \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($ $,36.1)};
+             coordinates {($ $,2034)};
              
         \addplot[style={pyellow,fill=pyellow,mark=none}]
-             coordinates {($ $,0.74)};
+             coordinates {($ $,0)};
     \end{axis}
 \end{tikzpicture}
 \\[12pt]
@@ -561,14 +560,15 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
         \addplot[style={rred,fill=rred,mark=none}]
              coordinates {($n=2$,1.123) ($n=3$,0.85) ($n=4$,1.09) ($n=5$,1.0) ($n=6$,1.0)};
 		
-		% states with triple ins
+		
         \addplot[style={ggreen,fill=ggreen,mark=none}]
              coordinates {($n=2$,0.0) ($n=3$,0.0) ($n=4$,0.0) ($n=5$,0.0) ($n=6$,1.0)};
 		
-		% generalized triple ins
+		% meta3
         \addplot[style={ppurple,fill=ppurple,mark=none}]
              coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
-             
+         
+        % meta4    
         \addplot[style={pblack,fill=pblack,mark=none}]
              coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
              
@@ -650,16 +650,12 @@ Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n
 \node (n9) at (9,0) {$b$};
 \node (n10) at (10,0) {$c$};
 \node (n11) at (11,0) {$c$};
-
 \draw (n0) edge [rred, bend left=90] (n1);
 \draw (n1) edge [rred, bend right=90] (n5);
-
 \draw (n2) edge [ggreen, bend left=90] (n3);
 \draw (n3) edge [ggreen, bend right=90] (n7);
-
 \draw (n4) edge [bblue, bend left=90] (n6);
 \draw (n6) edge [bblue, bend right=90] (n10);
-
 \draw (n8) edge [pyellow, bend left=90] (n9);
 \draw (n9) edge [pyellow, bend right=90] (n11);
 \end{tikzpicture}
