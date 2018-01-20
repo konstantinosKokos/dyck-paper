@@ -401,12 +401,22 @@ The grammar of \textit{triple insertion}, as its name suggests, simply inserts i
 \caption{Grammar of triple insertions}
 \end{figure}
 
-Despite its compact size (and inarguable naivety), our first grammar is nevertheless relatively expressive. The prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words \todo{that exhibit this characteristic.. counter: aabbacbaccbc}.
+Despite its compact size (and inarguable naivety), our first grammar is nevertheless relatively expressive. The prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns when matched with one another. One such word, for instance, is \w{aabbacbaccbc}.
 \subsection{Adding States: Meta-Grammars}
 The underwhelming performance of our first attempt signaled for the necessity of more expressive states that would allow for more complex, "longer range" interactions. Intuitively, we imagined a convention by which certain new states would exist. Through controlled interactions, pairs of these new, "incomplete" states could allow parts of words to propagate through the rules until they eventually met their closures or were transformed into a single, new state. In that spirit, we defined the six states of \todo{cross-reference table}. One key difference is that our states may describe strings of arbitrary length, with the polarity now signifying whether the state is carrying an extra character or missing one instead (or having two extra characters, equivallently).
 
-In hindsight, we were able to identify a differently represented version of our idea in the growth rules, reaffirming our initial idea that these new states were indeed sound and necessary. The added expressivity, however, came at a cost of rapid rule expansion. Each of the new states could now (potentially) interact with every other, and their means of interaction could become convoluted and hard to decipher or write down. To overcome this obstacle we needed to be able to describe our rules at a slightly more abstract level. For instance, a state $A^{+}(x,y)$ (which now models not just the terminal $a$ but rather an intermediate state for which $ \# b(xy) = \# c(xy) = \# a(xy)-1$), could interact with a $B^{+}(z,w)$ to produce a $C^{-}$ in any of the following ways.
-\todo{ways}
+In hindsight, we were able to identify a differently represented version of our idea in the growth rules, reaffirming our initial idea that these new states were indeed sound and necessary. The added expressivity, however, came at a cost of rapid rule expansion. Each of the new states could now (potentially) interact with every other, and their means of interaction could become convoluted and hard to decipher or write down. To overcome this obstacle we needed to be able to describe our rules at a slightly more abstract level. For instance, a state $A^{+}(x,y)$ (which now models not just the terminal $a$ but rather an intermediate state for which $ \# b(xy) = \# c(xy) = \# a(xy)-1$), could interact with a $B^{+}(z,w)$ to produce a $C^{-}$ in a multitude of different ways.
+\begin{figure}[h!]
+\begin{align*}
+\setcounter{equation}{0}
+\s{C}^-(\epsilon, xyzw) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
+\s{C}^-(x, xyzw) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
+\s{C}^-(xy, xyzw) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
+\s{C}^-(xyz, w) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
+\s{C}^-(xyzw, \epsilon) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&.
+\end{align*}
+\caption{Interaction between $\s{A}^+$ and $\s{B}^+$}
+\end{figure}
 
 Note that for each pair interaction, different constraints pertaining to the order of the permuted concatenated strings need to be preserved, to account for (D2). In the example above, for instance, the internal order of each state's tuple is crucial, but also the external order enforced by the particular pair (ie. the extra $a$ must come before the extra $b$). For that purpose we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the allowable permutations. We thereby reduce the manual labour required to transcribe and debug individual rules.
 \Ord{\s{C}^-}{\s{A}^+, \s{B}^+}{t_{11} < t_{12} < t_{21} < t_{22}}{2}
@@ -419,7 +429,7 @@ In the above notation, we illustrate that $\textsc{B}^{-}$ may be constructed fr
 The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lower level of grammars to the higher level of \textit{meta-grammars}, or grammars of grammars. This strikes a resemblance to the notion of \textit{declarative programming}, where one only cares about what needs to be computed, rather than how.
 
 \subsection{Refining States: Rule Inference}
-Perhaps expectedly, the improved performance of our new approach again proved insufficient to completely parse $D^3$. New problems started arising when trying to solve longer words; even though they were sound, our rules failed to make full use of the expressivity that a 2-MCFG allows. We soon realized that we have over-constrained our rules by making them comply to the worst-case scenario. Following the example of \todo{2.2?}, if we had kept memory of the position of $a$ in $A^{+}(x,y)$, we could allow new rules to exist, such as \todo{rule} in the case of $a$ in $x$. Splitting each state into multiple different, \textit{refined} states that now provide knowledge of their extra characters' positions, we could model vastly more interactions.
+Perhaps expectedly, the improved performance of our new approach again proved insufficient to completely parse $D^3$. New problems started arising when trying to solve longer words; even though they were sound, our rules failed to make full use of the expressivity that a 2-MCFG allows. We soon realized that we have over-constrained our rules by making them comply to the worst-case scenario. Following the example of \todo{ref fig 2.2}, if we had kept memory of the position of $a$ in a \textit{refined} version of  $A^{+}(x,y)$, we could allow new rules to exist, such as \[\s{C}^-(xz, wy) \leftarrow \s{A}^+_{left}(x,y),\ \s{B}^+(z,w).\] in the case of the extra $a$ residing in $x$. Splitting each state into multiple different, refined states that now provide knowledge of their extra characters' positions, we could model vastly more interactions.
 
 At this point, the abstraction offered by our meta-grammars did not cover our needs anymore. The same difficulty that we had encountered before was prominent once more, except now at an even-higher level. Transcribing meta-rules and proofreading through them was very time consuming and draining, and hindered our progress. In order to test a new hypothesis pertaining to the refined states we would again have to go through a lot of arid work.
 
@@ -469,9 +479,7 @@ Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom
 \end{algorithmic}
 \end{algorithm}
 
-\todo{computationally infeasible combinations of arbitrary number of states}
-
-\todo{you can just give state descriptors now!!}
+Note that the above algorithm can easily be generalized to be applicable to the combination of an arbitrary number of states, but doing so would render it computationally infeasible. By using \textit{ARIS}, one needs only specify a grammar's states and its descriptors, thus eliminating the need to explicitly define rules or even meta-rules.
 
 \section{Implementation}
 Enabled by the machinery described in the previous chapter we performed a multitude of tests using different grammars. In this chapter we describe a few of these grammars that we deem as milestones of our progression, in ascending order of complexity. We also present some statistics to allow for a direct comparison to be made between them. For the purposes of this project we use a version of MCFParser [\todo{Ljunglöf}] as our backend, which we adapted to our needs\footnote{The original can be found at https://github.com/heatherleaf/MCFParser.py}.
@@ -486,10 +494,11 @@ This very simple grammar consists of simply the rules of triple-insertion on a s
 \end{align*}
 \paragraph{G$_1$: Adding word composition}
 Benefiting from the added expressivity of $\mathcal{O}$, we can extend the previous grammar with a single meta-rule that allows two non-terminals $W(x,y)$, $W(z,w)$ to interact with another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated.
+\vspace{-\topsep}
 \begin{align*}
+& \quad\quad\quad\quad \vdots \\
 &\Or{\s{W}}{\s{W}, \s{W}}{t_{11} < t_{12},\ t_{21} < t_{22}}{2}
 \end{align*}
-
 \paragraph{G$_2$: Incomplete words}
 This grammar largely expands upon the concept of state interaction of the previous grammar, replacing the idea of triple insertion with the use of non-terminals that correspond to types of incomplete words. There is a very clear and direct correspondence between this grammar and the non-swapping rules of the growth algorithm.
 \begin{align*}
@@ -515,12 +524,38 @@ Surprisingly, cases manageable by triple insertion could not be solved by the la
 \paragraph{G$_4$: Generalizing triple insertion}
 The concept of triple insertion can be generalized; rather than simply adding terminals $a$, $b$ and $c$, we could add larger word segments through states $\s{A}^+$, $\s{B}^+$ and $s{C}^+$. To do so, we need to model the concurrent interaction of these three states with any other state. Our abstractions are actually able to manage that, so we test another grammar which replaces the triple insertion with a \textit{triple state insertion}.
 \begin{align*}
+& \quad\quad\quad\quad \vdots \\
 &\forall \ \s{K} \in \mathcal{S} \setminus \s{W}:\\ 
 &\quad\quad\Or{\s{K}}{\s{K}, \s{A}^+, \s{B}^+, \s{C}^+}{t_{11} < t_{12},\\
 &\quad\quad\quad\quad t_{21} < t_{22} < t_{31} < t_{32} < t_{41} < t_{42}}{2}
 \end{align*}
 \paragraph{G$_5$: Refined non-terminals}
-As the peak of our efforts, we replace non-terminals with their refined versions as presented in \todo{reference 2.3}. $A^{+}(x,y)$ is now split into $A^{+}_{left}(x,y)$ and $A^{+}_{right}(x,y)$, with the extra $a$ residing in $x$ and $y$ in each case respectively.
+As the peak of our efforts, we replace non-terminals with their refined versions as presented in \todo{reference 2.3}. $A^{+}(x,y)$ is now split into $A^{+}_{left}(x,y)$ and $A^{+}_{right}(x,y)$, with the extra $a$ residing in $x$ and $y$ in each case respectively. To generate this grammar, we use ARIS initialized with the following $\mathcal{D}$ map:
+
+\begin{minipage}{.2\textwidth}
+\begin{align*}
+\s{W} &\mapsto (\epsilon, \epsilon) \\
+\s{A}^+_{left} &\mapsto (a, \epsilon) \\
+\s{A}^+_{right} &\mapsto (\epsilon, a) \\
+\s{B}^+_{left} &\mapsto (b, \epsilon) \\
+\s{B}^+_{right} &\mapsto (\epsilon, b) \\
+\s{C}^+_{left} &\mapsto (c, \epsilon) \\
+\s{C}^+_{right} &\mapsto (\epsilon, c) \\
+\s{A}^-_{left} &\mapsto (bc, \epsilon) 
+\end{align*}
+\end{minipage}
+\begin{minipage}{.2\textwidth}
+\begin{align*}
+\s{A}^-_{right} &\mapsto (\epsilon, bc) \\
+\s{A}^-_{left, right} &\mapsto (b, c) \\
+\s{B}^-_{left} &\mapsto (ac, \epsilon) \\
+\s{B}^-_{right} &\mapsto (\epsilon, ac) \\
+\s{B}^-_{left, right} &\mapsto (a, c) \\
+\s{C}^-_{left} &\mapsto (ab, \epsilon) \\
+\s{C}^-_{right} &\mapsto (\epsilon, ab) \\
+\s{C}^-_{left, right} &\mapsto (a, b)
+\end{align*}
+\end{minipage}
 \subsection{Results}
 We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$. The charts reveal two obvious trends- as grammars get more complex, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with dramatically exploding computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (recall that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
 \begin{figure}[h!]
@@ -718,5 +753,12 @@ The growth rules presented in \todo{reference 1} are formally sound and complete
 The act of promotion translates to cyclic rotation of the $A_2$ web [\todo{Petersen}]. Perhaps an interesting question here is whether promotion can be handled by a 2-MCFG (as a \textit{context-free rewriting system}). If that is the case, it could be worth looking into the properties of orbits, to test for instance if there are promotions within an orbit that can be easier to solve than others. Solving a single promotion and transcribing the solution to all other words belonging to the same orbit could then be a guideline towards completeness. The scale of such a task would of course be much greater, but the combination of these theoretical backbones into a unified body, combined with our mostly applied approach, could shed some light on the problem at hand.
 
 \section{Tools}
+\subsection{Utilities}
+\todo{extensions on mcfparser -- already referenced}
+\subsection{Visualization}
 \section{Conclusion}
+\section*{Acknowledgements}
+\todo{thanks mum}
+
+\todo{references}
 \end{document}
