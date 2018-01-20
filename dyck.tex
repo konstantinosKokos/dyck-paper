@@ -758,7 +758,7 @@ The act of promotion translates to cyclic rotation of the $A_2$ web \cite{peters
 
 \section{Tools}\label{tools}
 \subsection{Grammar utilities}
-We have implemented the modelling techniques we described in section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which essentially provides the programmer with a \textit{domain-specific language} very close to this paper's mathematical notation\footnote{The full code can be found at https://github.com/omelkonian/LoLa, available under the GPL}. The following example demonstrates the similariry with G$_1$, defined in section \ref{sec3}:
+We have implemented the modelling techniques we described in section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which essentially provides the programmer with a \textit{domain-specific language} very close to this paper's mathematical notation. The following example demonstrates the similariry with G$_1$, defined in section \ref{sec3}:
 \begin{minted}[baselinestretch=1.1, fontsize=\small]{python}
 from dyck import *
 G_1 = Grammar([
@@ -789,7 +789,7 @@ To that purpose, we distribute another Python package, called \textbf{dyckviz}, 
 
 Young tableaux in an orbit are colored via the first-match-policy, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the correponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated.
 
-Webs in a certain orbit, on the other hand, are rendered in a single PDF file (one web per page). Note that we represent them in a slightly simplified way compared to their definition in section \ref{sec2}, ignoring intermediate graph nodes that do not have corresponding non-terminals. Below is an example of the spider web produced from the word \w{abaacbbacbabaccbcc}:
+Webs in a certain orbit, on the other hand, are rendered in a single PDF file (one web per page). Note that we represent them in a slightly simplified way compared to their definition in section \ref{sec2}, ignoring intermediate graph nodes that do not have corresponding non-terminals. Below is an example of the spider web produced from \w{abaacbbacbabaccbcc}:
 \medskip
 \includegraphics[width=\columnwidth]{web.pdf}
 
