@@ -485,8 +485,8 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
         width  = 0.52*\textwidth,
         height = 6cm,
         major x tick style = transparent,
-        ybar=2*\pgflinewidth,
-        bar width=3pt,
+        ybar=20,
+        bar width=6pt,
         ymajorgrids = true,
         ylabel = {\textsc{Rule size}},
         every axis x label/.style={
@@ -497,7 +497,7 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
         symbolic x coords={$ $},
         xtick = data,
         scaled y ticks = false,
-        enlarge x limits=0.1,
+        enlarge x limits=0,
         ymin=0,
         legend cell align=left,
         legend style={
@@ -533,7 +533,7 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
         width  = 0.52*\textwidth,
         height = 6cm,
         major x tick style = transparent,
-        ybar=2*\pgflinewidth,
+        ybar=4*\pgflinewidth,
         bar width=3pt,
         ymajorgrids = true,
         ylabel = {\textsc{Counter-examples} \small (\%)},
@@ -584,7 +584,7 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
         width  = 0.52*\textwidth,
         height = 6cm,
         major x tick style = transparent,
-        ybar=2*\pgflinewidth,
+        ybar=4*\pgflinewidth,
         bar width=3pt,
         ymajorgrids = true,
         ylabel = {\textsc{Computation Time} \small (sec)},
@@ -600,7 +600,7 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
         ymin=0,
         legend cell align=left,
         legend style={
-        		at={(0.5,-0.15)},
+        		at={(0.5,-0.25)},
 				anchor=north,
 				legend columns=-1
 			},
@@ -622,8 +622,10 @@ Nobis temporibus nihil expedita quia blanditiis. Non voluptatum vel autem volupt
              
         \addplot[style={pyellow,fill=pyellow,mark=none}]
              coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+        \legend{G$_0$,G$_1$,G$_2$,G$_3$,G$_4$,G$_5$}
     \end{axis}
 \end{tikzpicture}
+\\
 \caption{Performance measures}
 \end{figure}
 
