@@ -63,9 +63,10 @@ We discuss the problem of parsing the Dyck language of 3 symbols, $D^3$, using a
 
 \ccsdesc[500]{Formal languages and automata theory~Grammars and context-free languages}
 
-\keywords{Dyck Language; Multiple Context Free Grammars (MCFG); Parsing}
-
-\epigraph{When you depart for Ithaca,\\wish for the road to be long,\\full of adventure, full of knowledge.}{\textit{C. P. Cavafy\\ Ithaca}}
+\keywords{Dyck Language; multiple context free grammars (MCFG); parsing; formal grammars}
+\vspace{1cm}
+\epigraph{\textit{When you depart for Ithaca,\\wish for the road to be long,\\full of adventure, full of knowledge.}}{\textit{C. P. Cavafy\\ Ithaca}}
+\vspace{1cm}
 
 \section{Introduction}\label{sec1}
 Our goal with this paper is the analysis of the 3-dimensional Dyck Language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. In this chapter, we start by providing some concise definitions and a brief overview of interesting correspondences and properties of the $D^3$. The goal of this chapter is to simply introduce the reader to some possibly less known concepts rather than to fully expand upon them. For a deeper and more detailed view of the ideas presented, we direct the interested reader towards our list of references, which convey significantly more information.
@@ -93,7 +94,7 @@ A standard Young Tableau is defined as an assortment of $n$ boxes into a ragged 
 
 In the case of $D^d$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times d$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $dn$, where $n$ is the number of occurrences of each unique symbol and $d$ the total number of unique symbols \cite{moortgat}.
 Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableu of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example below:
-\begin{table}[h!]
+\begin{figure}[h!]
 	\centering
 	\begin{tabular}{rl}
 		\setlength{\tabcolsep}{.05pt}
@@ -112,7 +113,7 @@ Practically, the rectangular shape ensures constraint (D1), while the ascending 
 	    \end{tabular}
 	\end{tabular}
   	\caption{Young tableau for \w{abaabcbaaabcbcbccc}}
-\end{table}
+\end{figure}
 
 \paragraph{Promotions and Orbits}
 Having presented the concept of a Young Tableau, we can now move ahead with the \textit{Jeu-de-taquin} algorithm. When operating on a rectangular Table $T(n,d)$, Jeu-de-taquin consists of the following steps:
@@ -179,7 +180,7 @@ The $A_2$ \textit{irreducible combinatorial spider web} is a category which is d
 \end{enumerate}
 
 $A_2$ is a way of constructing visually intriguing, minimal parses of $D^3$ words. To make this clear, we first define the three \textit{positive} and three \textit{negative} edges which assume the role of states in the parsing process of $D^3$, aligned with their corresponding alphabet symbols (or sequence thereof):
-\begin{table}[h!]
+\begin{figure}[h!]
 \[\begin{array}{c c}
 $State$ & $Symbol Sequence$\\
 \hline
@@ -192,7 +193,7 @@ C^- & bc\\
 \end{array}\]
 \caption{Edges of the $A_2$ growth algorithm}
 \label{fig:states}
-\end{table}
+\end{figure}
 
 We now present a version of the summation of the \textit{growth algorithm} \cite{petersen} in web form (Fig.~\ref{fig:rules}), which models the various possible interactions of edges-states, rephrased to the context of $D^3$. An example is shown in section \ref{tools}.
 
@@ -590,23 +591,16 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 				legend columns=-1
 			},
     ]
-		% triple in    
-    	\addplot[style={bblue,fill=bblue,mark=none}]
+        \addplot[style={bblue,fill=bblue,mark=none}]
             coordinates {($ $, 65)};
-
         \addplot[style={rred,fill=rred,mark=none}]
              coordinates {($ $,95)};
-
         \addplot[style={ggreen,fill=ggreen,mark=none}]
              coordinates {($ $,270)};
-
-		% meta-3
         \addplot[style={ppurple,fill=ppurple,mark=none}]
              coordinates {($ $,690)};
-        % meta-4   
         \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($ $,2034)};
-             
+             coordinates {($ $,2034)};     
         \addplot[style={pyellow,fill=pyellow,mark=none}]
              coordinates {($ $,1456)};
     \end{axis}
@@ -638,28 +632,21 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 				anchor=north,
 				legend columns=-1
 			},
+		ytick={0, 2, ..., 17},
+		y grid style={densely dotted, line cap=round},
     ]
-    	%triple 
         \addplot[style={bblue,fill=bblue,mark=none}]
-            coordinates {($n=2$, 0.0) ($n=3$,0.0) ($n=4$,1.7) ($n=5$,6.42) ($n=6$,14.55)};
-
+            coordinates {($n=2$, 0) ($n=3$,0) ($n=4$,1.7) ($n=5$,6.42) ($n=6$,14.55)};
         \addplot[style={rred,fill=rred,mark=none}]
-             coordinates {($n=2$,1.123) ($n=3$,0.85) ($n=4$,1.09) ($n=5$,1.0) ($n=6$,1.0)};
-		
-		
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,1.5) ($n=5$,5) ($n=6$,10)};
         \addplot[style={ggreen,fill=ggreen,mark=none}]
-             coordinates {($n=2$,0.0) ($n=3$,0.0) ($n=4$,0.0) ($n=5$,0.0) ($n=6$,1.0)};
-		
-		% meta3
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0.2) ($n=5$,0.8) ($n=6$,1.7)};
         \addplot[style={ppurple,fill=ppurple,mark=none}]
-             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
-         
-        % meta4    
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.1)};
         \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
-             
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.07)};
         \addplot[style={pyellow,fill=pyellow,mark=none}]
-             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.05)};
 
     \end{axis}
 \end{tikzpicture}
@@ -673,7 +660,7 @@ We display three charts, depicting the number of rules, percentage of counter-ex
         ybar=4*\pgflinewidth,
         bar width=3pt,
         ymajorgrids = true,
-        ylabel = {\textsc{Computation Time} \small (sec)},
+        ylabel = {\textsc{Computation Time} \tiny log(sec)},
         every axis x label/.style={
   			  at={(ticklabel* cs:1.05)},
   			  anchor=west,
@@ -690,24 +677,21 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 				anchor=north,
 				legend columns=-1
 			},
+		ytick={0, 1, ..., 5},
+		y grid style={densely dotted, line cap=round},
     ]
-		\addplot[style={bblue,fill=bblue,mark=none}]
-           coordinates {($n=2$, 1.0) ($n=3$,1.0) ($n=4$,1.0) ($n=5$,1.0) ($n=6$,1.0)};
-
+		 \addplot[style={bblue,fill=bblue,mark=none}]
+           coordinates {($n=2$, 0) ($n=3$,-0.3) ($n=4$,0.9) ($n=5$,2.1) ($n=6$,3.37)};           
         \addplot[style={rred,fill=rred,mark=none}]
-             coordinates {($n=2$,1.123) ($n=3$,0.85) ($n=4$,1.09) ($n=5$,1.0) ($n=6$,1.0)};
-
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,1.23) ($n=5$,2.39) ($n=6$,3.73)};             
         \addplot[style={ggreen,fill=ggreen,mark=none}]
-             coordinates {($n=2$,0.92) ($n=3$,0.56) ($n=4$,0.95) ($n=5$,1.0) ($n=6$,1.0)};
-
+             coordinates {($n=2$,0) ($n=3$,1) ($n=4$,2.28) ($n=5$,3.54) ($n=6$,4.79)};
         \addplot[style={ppurple,fill=ppurple,mark=none}]
-             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
-             
+             coordinates {($n=2$,0) ($n=3$,1.04) ($n=4$,2.34) ($n=5$,3.64) ($n=6$,4.99)};
         \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
-             
+             coordinates {($n=2$,1.55) ($n=3$,2.82) ($n=4$,4.37) ($n=5$,5.42) ($n=6$,)};
         \addplot[style={pyellow,fill=pyellow,mark=none}]
-             coordinates {($n=2$,0.74) ($n=3$,1.07) ($n=4$,1.23) ($n=5$,1.0) ($n=6$,1.0)};
+             coordinates {($n=2$,0.17) ($n=3$,1.46) ($n=4$,2.77) ($n=5$,4.09) ($n=6$,5.42)};
         \legend{G$_0$,G$_1$,G$_2$,G$_3$,G$_4$,G$_5$}
     \end{axis}
 \end{tikzpicture}
@@ -789,9 +773,12 @@ To that end, we distribute another Python package, called \textbf{dyckviz}, prov
 
 Young tableaux in an orbit are colored via the first-match-policy, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the correponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated.
 
-Webs in a certain orbit, on the other hand, are rendered in a single PDF file (one web per page). Note that we represent them in a slightly simplified way compared to their definition in section \ref{sec2}, ignoring intermediate graph nodes that do not have corresponding non-terminals. Below is an example of the spider web produced from \w{abaacbbacbabaccbcc}:
+Webs in a certain orbit, on the other hand, are rendered in a single PDF file (one web per page). Note that we represent them in a slightly simplified way compared to their definition in section \ref{sec2}, ignoring intermediate graph nodes that do not have corresponding non-terminals, as shown below:
 \medskip
-\includegraphics[width=\columnwidth]{web.pdf}
+\begin{figure}[h!]
+\includegraphics[width=1.05\columnwidth]{web.pdf}
+\caption{Spider web of \w{abaacbbacbabaccbcc}}
+\end{figure}
 
 \section{Conclusion}
 We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some interesting techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tool suite available through the MCFParser and made it easier for it to accommodate MIX-style languages and systems of meta-grammars in general. 
@@ -799,11 +786,11 @@ We tried to accurately present the intricacies of $D^3$ and the difficulties tha
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
 
 \section*{Acknowledgements}
-We would like to thank dr. Michael Moortgat for introducing us to the problem and getting us started with valuable bibliography and some initial code.
+We would like to thank Dr. Michael Moortgat for introducing us to the problem and getting us started with valuable bibliography and some initial code.
 
 %\newpage
 
-\bibliographystyle{ieeetr}
+\bibliographystyle{acm}
 \bibliography{sources}
 
 \end{document}
