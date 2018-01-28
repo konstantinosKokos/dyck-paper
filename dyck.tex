@@ -64,9 +64,8 @@ We discuss the problem of parsing the Dyck language of 3 symbols, $D^3$, using a
 \ccsdesc[500]{Formal languages and automata theory~Grammars and context-free languages}
 
 \keywords{Dyck Language; multiple context free grammars (MCFG); parsing; formal grammars}
-\vspace{1cm}
+\vspace{.18cm}
 \epigraph{\textit{When you depart for Ithaca,\\wish for the road to be long,\\full of adventure, full of knowledge.}}{\textit{C. P. Cavafy\\ Ithaca}}
-\vspace{1cm}
 
 \section{Introduction}\label{sec1}
 Our goal with this paper is the analysis of the 3-dimensional Dyck Language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. In this chapter, we start by providing some concise definitions and a brief overview of interesting correspondences and properties of the $D^3$. The goal of this chapter is to simply introduce the reader to some possibly less known concepts rather than to fully expand upon them. For a deeper and more detailed view of the ideas presented, we direct the interested reader towards our list of references, which convey significantly more information.
@@ -565,6 +564,7 @@ As the peak of our efforts, we replace non-terminals with their refined versions
 We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$. The charts reveal two obvious trends; as grammars get more complex, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with dramatically exploding computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (recall that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
 \begin{figure}[h!]
 % Rule size
+\hspace*{-.5cm}
 \begin{tikzpicture}
     \begin{axis}[
         width  = 0.52*\textwidth,
