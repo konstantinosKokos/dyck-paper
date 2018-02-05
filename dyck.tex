@@ -1,4 +1,24 @@
-\documentclass[nonatbib,numbers,10pt]{sigplanconf}
+\documentclass[nonatbib,numbers,10pt]{llncs}
+
+% Font
+%\usepackage[scaled]{helvet}
+%\renewcommand\familydefault{\sfdefault} 
+%\usepackage[T1]{fontenc}
+
+%\usepackage{fontspec}
+%\setmainfont{Nimbus Sans L}
+%\setmainfont{Phetsarath OT}
+
+% Geometry
+\usepackage{geometry}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	top=4.5cm,
+	right=4cm,
+	bottom=6.5cm,
+	left=5cm,
+}
 
 \usepackage{epigraph}
 % Math
@@ -49,23 +69,20 @@
 \newcommand{\Con}[4]{\Order{C}{#1}{#2}{#3}{#4}}
 
 \title{$D^3$ as a 2-MCFL}
-
-\authorinfo{Orestis Melkonian, Konstantinos Kogkalidis}{Utrecht University, The Netherlands}{o.melkonian@uu.nl, konstantinos@riseup.net}
+\author{}
+\institute{}
 
 \begin{document}
-\toappear{}
-
 \maketitle
 
 \begin{abstract}
 We discuss the problem of parsing the Dyck language of 3 symbols, $D^3$, using a 2-Multiple Context-Free Grammar. We implement a number of novel techniques designed for the purpose of solving that problem and present the associated software package we developed.
 \end{abstract}
 
-\ccsdesc[500]{Formal languages and automata theory~Grammars and context-free languages}
+%\ccsdesc[500]{Formal languages and automata theory~Grammars and context-free languages}
 
 \keywords{Dyck Language; multiple context free grammars (MCFG); parsing; formal grammars}
-\vspace{.18cm}
-\epigraph{\textit{When you depart for Ithaca,\\wish for the road to be long,\\full of adventure, full of knowledge.}}{\textit{C. P. Cavafy\\ Ithaca}}
+%\epigraph{\textit{When you depart for Ithaca,\\wish for the road to be long,\\full of adventure, full of knowledge.}}{\textit{C. P. Cavafy\\ Ithaca}}
 
 \section{Introduction}\label{sec1}
 Our goal with this paper is the analysis of the 3-dimensional Dyck Language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. In this chapter, we start by providing some concise definitions and a brief overview of interesting correspondences and properties of the $D^3$. The goal of this chapter is to simply introduce the reader to some possibly less known concepts rather than to fully expand upon them. For a deeper and more detailed view of the ideas presented, we direct the interested reader towards our list of references, which convey significantly more information.
@@ -93,26 +110,6 @@ A standard Young Tableau is defined as an assortment of $n$ boxes into a ragged 
 
 In the case of $D^d$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times d$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $dn$, where $n$ is the number of occurrences of each unique symbol and $d$ the total number of unique symbols \cite{moortgat}.
 Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableu of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example below:
-\begin{figure}[h!]
-	\centering
-	\begin{tabular}{rl}
-		\setlength{\tabcolsep}{.05pt}
-		\begin{tabular}{r}
-		a: \\ b: \\ c:
-		\end{tabular}
-		&
-	    \begin{tabular}{| c | c | c | c | c | c |}
-    		\hline
-	    1 & 3 & 4 & 8 & 9 & 10 \\
-    		\hline
-	    2 & 5 & 7 & 11 & 13 & 15 \\
-	    \hline
-	    6 & 12 & 14 & 16 & 17 & 18 \\
-    		\hline
-	    \end{tabular}
-	\end{tabular}
-  	\caption{Young tableau for \w{abaabcbaaabcbcbccc}}
-\end{figure}
 
 \paragraph{Promotions and Orbits}
 Having presented the concept of a Young Tableau, we can now move ahead with the \textit{Jeu-de-taquin} algorithm. When operating on a rectangular Table $T(n,d)$, Jeu-de-taquin consists of the following steps:
@@ -125,7 +122,7 @@ Having presented the concept of a Young Tableau, we can now move ahead with the 
 \item[(3)] Replace the empty box with $dn$.
 \end{enumerate}
 
-The table obtained through Jeu-de-taquin on T is called its promotion $p(T)$. $k$ successive applications of Jeu-de-taquin result in $p^k(T)$. \cite{haiman} shows that that $p^{dn}(T)=T$. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^d_n$ into disjoint sets, i.e. there is no word $w$ whose Tableu $T_w$ belongs to more or less than a single orbit.
+The table obtained through Jeu-de-taquin on T is called its promotion $p(T)$. $k$ successive applications of Jeu-de-taquin result in $p^k(T)$. \cite{petersen} shows that that $p^{dn}(T)=T$. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^d_n$ into disjoint sets, i.e. there is no word $w$ whose Tableu $T_w$ belongs to more or less than a single orbit.
 \paragraph{Constrained Walk}
 A Dyck word can also be visualized as a constrained \textit{walk} within the first quadrant of $\mathbb{Z}^2$. We can assign each alphabet symbol $x$ a vector value $\vec{v_x} \in \mathbb{Z}^2$ such that all pairs of $(\vec{v_x},\ \vec{v_y})$ are linearly independent and:
 \begin{eqnarray}
@@ -134,44 +131,9 @@ A Dyck word can also be visualized as a constrained \textit{walk} within the fir
 \end{eqnarray}
 
 We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk follows.
-\begin{figure}[h!]
-    \begin{tikzpicture}[
-    	scale=1,
-    	-->/.style={->,thick,shorten >=.666pt,shorten <=.666pt},
-    ]
-    \draw[loosely dotted] (0,0) grid (3,3);
-    \path[use as bounding box] (-2,1) rectangle (3,3);
-    \draw[->] (-0.25,0) -- (3.5,0) node[right] {$x$};
-    \draw[->] (0,-0.25) -- (.,3.5) node[left] {$y$};
-    \foreach \x/\xtext in {1/1, 2/2, 3/3}
-    \draw[shift={(\x,0)}] (0pt,2pt) -- (0pt,-2pt) node[below] {$\xtext$};
-    \foreach \y/\ytext in {1/1, 2/2, 3/3}
-    \draw[shift={(0,\y)}] (2pt,0pt) -- (-2pt,0pt) node[left] {$\ytext$};
-    \draw [bblue, -->] (0,0) -- node[left] {\tiny{(1)}} (0,1);
-    \draw [rred, -->] (0,1) -- node[below] {\tiny{(2)}} (1,0);
-    \draw [bblue, -->] (1,0) -- node[left] {\tiny{(3)}} (1,1);
-    \draw [bblue, -->] (1,1) -- node[left] {\tiny{(4)}} (1,2);
-	\draw [rred, -->] (1,2) -- node[below] {\tiny{(5)}} (2,1);
-	\draw [rred, -->] (1,1) -- node[below] {\tiny{(7)}} (2,0);
-	\draw [bblue, -->] (2,0) -- node[left] {\tiny{(8)}} (2,1);
-    \draw [bblue, -->] (2,1) -- node[left] {\tiny{(9)}} (2,2);
-    \draw [bblue, -->] (2,2) -- node[left] {\tiny{(10)}} (2,3);
-    \draw [rred, -->] (2,3) -- node[below] {\tiny{(11)}}(3,2);
-	\draw [ggreen, -->] (3,2) -- node[below] {\tiny{(12)}} (2,2);
-	\draw [rred, -->] (2,2) -- node[below] {\tiny{(13)}} (3,1);
-	\draw [ggreen, -->] (3,1) -- node[below] {\tiny{(14)}} (2,1);-
-	\draw [ggreen, -->] (2,1) -- node[below] {\tiny{(6)}} (1,1);
-    \draw [rred, -->] (2,1) -- node[below] {\tiny{(15)}} (3,0);
-	\draw [ggreen, -->] (3,0) -- node[below] {\tiny{(16)}} (2,0);
-	\draw [ggreen, -->] (2,0) -- node[below] {\tiny{(17)}} (1,0);
-	\draw [ggreen, -->] (1,0) -- node[below] {\tiny{(18)}} (0,0);
-    \draw[fill=orange,color=black] circle (0.75pt);
-    \end{tikzpicture}
-\\
-\caption{The constrained walk of \w{abaabcbaaabcbcbccc} with vector value assignments $\vec{v}_a = (1,0)$, $\vec{v}_b = (-1,1)$, $\vec{v}_c = (0,-1)$}
-\end{figure}
+
 \paragraph{$A_2$ Combinatorial Spider Webs}
-The $A_2$ \textit{irreducible combinatorial spider web} is a category which is defined as a planar directed graph $D$ \cite{kuperberg}, with no multiple edges embedded in a disk that satisfies conditions W1 through W3:
+The $A_2$ \textit{irreducible combinatorial spider web} is a category which is defined as a planar directed graph $D$ \cite{petersen}, with no multiple edges embedded in a disk that satisfies conditions W1 through W3:
 \begin{enumerate}
 \item[(W1)] $D$ consists of positive and negative edges, with each edge being oriented from one of the negative edges to one of the positive edges.
 \item[(W2)] All boundary vertices have degree $1$ while all internal vertices have degree $3$.
@@ -179,173 +141,8 @@ The $A_2$ \textit{irreducible combinatorial spider web} is a category which is d
 \end{enumerate}
 
 $A_2$ is a way of constructing visually intriguing, minimal parses of $D^3$ words. To make this clear, we first define the three \textit{positive} and three \textit{negative} edges which assume the role of states in the parsing process of $D^3$, aligned with their corresponding alphabet symbols (or sequence thereof):
-\begin{figure}[h!]
-\[\begin{array}{c c}
-$State$ & $Symbol Sequence$\\
-\hline
-A^+ & a\\
-B^+ & b\\
-C^+ & c\\
-A^- & bc\\
-B^- & ac\\
-C^- & bc\\
-\end{array}\]
-\caption{Edges of the $A_2$ growth algorithm}
-\label{fig:states}
-\end{figure}
 
-We now present a version of the summation of the \textit{growth algorithm} \cite{petersen} in web form (Fig.~\ref{fig:rules}), which models the various possible interactions of edges-states, rephrased to the context of $D^3$. An example is shown in section \ref{tools}.
-
-\begin{figure}[h!]
-\[
-\begin{tikzpicture}[
-every node/.style={anchor=base},xscale=.725,yscale=1.1,
--->/.style={->,shorten >=2pt,shorten <=2pt,>=stealth},
-<--/.style={<-,shorten >=2pt,shorten <=2pt,>=stealth},
---->/.style={->,shorten >=1pt,shorten <=1pt,>=stealth},
-<---/.style={<-,>=stealth},
-]
-\node (i1) at (0,0) {$\textsc{\small A}^+$};
-\node (ii1) at (1,0) {$\textsc{\small B}^+$};
-\node (d1) at (.5,-1) {};
-\node (o1) at (.5,-2) {$\textsc{\small C}^-$};
-\draw[-->] (i1) -- (d1.center);
-\draw[-->] (ii1) -- (d1.center);
-\draw[<--] (d1.north) -- (o1);
-
-\node (i2) at (2,0) {$\textsc{\small B}^+$};
-\node (ii2) at (3,0) {$\textsc{\small C}^+$};
-\node (d2) at (2.5,-1) {};
-\node (o2) at (2.5,-2) {$\textsc{\small A}^-$};
-\draw[-->] (i2) -- (d2.center);
-\draw[-->] (ii2) -- (d2.center);
-\draw[<--] (d2.north) -- (o2);
-
-\node (i3) at (4,0) {$\textsc{\small A}^+$};
-\node (ii3) at (5,0) {$\textsc{\small C}^+$};
-\node (d3) at (4.5,-1) {};
-\node (o3) at (4.5,-2) {$\textsc{\small B}^-$};
-\draw[-->] (i3) -- (d3.center);
-\draw[-->] (ii3) -- (d3.center);
-\draw[<--] (d3.north) -- (o3);
-
-\node (i4) at (6,0) {$\textsc{\small B}^-$};
-\node (ii4) at (7,0) {$\textsc{\small A}^-$};
-\node (d4) at (6.5,-1) {};
-\node (o4) at (6.5,-2) {$\textsc{\small C}^+$};
-\draw[<-,>=stealth] (i4) -- (d4.center);
-\draw[<-,>=stealth] (ii4) -- (d4.center);
-\draw[->,>=stealth] (d4.center) -- (o4);
-
-\node (i5) at (8,0) {$\textsc{\small C}^-$};
-\node (ii5) at (9,0) {$\textsc{\small A}^-$};
-\node (d5) at (8.5,-1) {};
-\node (o5) at (8.5,-2) {$\textsc{\small B}^+$};
-\draw[<-,>=stealth] (i5) -- (d5.center);
-\draw[<-,>=stealth] (ii5) -- (d5.center);
-\draw[->,>=stealth] (d5.center) -- (o5);
-
-\node (i6) at (10,0) {$\textsc{\small C}^-$};
-\node (ii6) at (11,0) {$\textsc{\small B}^-$};
-\node (d6) at (10.5,-1) {};
-\node (o6) at (10.5,-2) {$\textsc{\small A}^+$};
-\draw[<-,>=stealth] (i6) -- (d6.center);
-\draw[<-,>=stealth] (ii6) -- (d6.center);
-\draw[->,>=stealth] (d6.center) -- (o6);
-
-\node (i21) at (.5,-2.5) {$\textsc{\small B}^+$};
-\node (ii21) at (2.5,-2.5) {$\textsc{\small B}^-$};
-\node (d21) at (1,-3.5) {};
-\node (dd21) at (2,-3.5) {};
-\node (o21) at (.5,-4.5) {$\textsc{\small A}^-$};
-\node (oo21) at (2.5,-4.5) {$\textsc{\small A}^-$};
-\draw[->,>=stealth] (i21) -- (d21.center);
-\draw[<-,>=stealth] (ii21) -- (dd21.center);
-\draw[<-,>=stealth] (d21.center) -- (dd21.center);
-\draw[<-,>=stealth, shorten >=5pt] (d21.center) -- (o21.center);
-\draw[->,>=stealth, shorten >=5pt] (dd21.center) -- (oo21.center);
-
-\node (i22) at (3.75,-2.5) {$\textsc{\small B}^+$};
-\node (ii22) at (5.75,-2.5) {$\textsc{\small A}^-$};
-\node (d22) at (4.25,-3.5) {};
-\node (dd22) at (5.25,-3.5) {};
-\node (o22) at (3.75,-4.5) {$\textsc{\small A}^-$};
-\node (oo22) at (5.75,-4.5) {$\textsc{\small B}^+$};
-\draw[->,>=stealth] (i22) -- (d22.center);
-\draw[<-,>=stealth] (ii22) -- (dd22.center);
-\draw[<-,>=stealth] (d22.center) -- (dd22.center);
-\draw[<-,>=stealth, shorten >=5pt] (d22.center) -- (o22.center);
-\draw[->,>=stealth, shorten >=5pt] (dd22.center) -- (oo22.center);
-
-\node (i23) at (7,-2.5) {$\textsc{\small A}^+$};
-\node (ii23) at (9,-2.5) {$\textsc{\small B}^-$};
-\node (d23) at (7.5,-3.5) {};
-\node (dd23) at (8.5,-3.5) {};
-\node (o23) at (7,-4.5) {$\textsc{\small B}^-$};
-\node (oo23) at (9,-4.5) {$\textsc{\small A}^+$};
-\draw[->,>=stealth] (i23) -- (d23.center);
-\draw[<-,>=stealth] (ii23) -- (dd23.center);
-\draw[<-,>=stealth] (d23.center) -- (dd23.center);
-\draw[<-,>=stealth, shorten >=5pt] (d23.center) -- (o23.center);
-\draw[->,>=stealth, shorten >=5pt] (dd23.center) -- (oo23.center);
-
-\node (i24) at (10,-2.5) {$\textsc{\small A}^+$};
-\node (ii24) at (11,-2.5) {$\textsc{\small A}^-$};
-\node (d24) at (10,-3.5) {};
-\node (dd24) at (11,-3.5) {};
-\draw[->,>=stealth] (i24) -- (d24.center);
-\draw[<-,>=stealth] (ii24) -- (dd24.center);
-\draw (d24.center) edge [-,>=stealth,bend right=90] (dd24.center);
-
-\node (i31) at (.5,-5) {$\textsc{\small B}^-$};
-\node (ii31) at (2.5,-5) {$\textsc{\small B}^+$};
-\node (d31) at (1,-6) {};
-\node (dd31) at (2,-6) {};
-\node (o31) at (.5,-7) {$\textsc{\small C}^+$};
-\node (oo31) at (2.5,-7) {$\textsc{\small C}^-$};
-\draw[<-,>=stealth] (i31) -- (d31.center);
-\draw[->,>=stealth] (ii31) -- (dd31.center);
-\draw[->,>=stealth] (d31.center) -- (dd31.center);
-\draw[->,>=stealth, shorten >=5pt] (d31.center) -- (o31.center);
-\draw[<-,>=stealth, shorten >=5pt] (dd31.center) -- (oo31.center);
-
-\node (i32) at (3.75,-5) {$\textsc{\small B}^-$};
-\node (ii32) at (5.75,-5) {$\textsc{\small C}^+$};
-\node (d32) at (4.25,-6) {};
-\node (dd32) at (5.25,-6) {};
-\node (o32) at (3.75,-7) {$\textsc{\small C}^+$};
-\node (oo32) at (5.75,-7) {$\textsc{\small B}^-$};
-\draw[<-,>=stealth] (i32) -- (d32.center);
-\draw[->,>=stealth] (ii32) -- (dd32.center);
-\draw[->,>=stealth] (d32.center) -- (dd32.center);
-\draw[->,>=stealth, shorten >=5pt] (d32.center) -- (o32.center);
-\draw[<-,>=stealth, shorten >=5pt] (dd32.center) -- (oo32.center);
-
-\node (i33) at (7,-5) {$\textsc{\small C}^-$};
-\node (ii33) at (9,-5) {$\textsc{\small B}^+$};
-\node (d33) at (7.5,-6) {};
-\node (dd33) at (8.5,-6) {};
-\node (o33) at (7,-7) {$\textsc{\small B}^+$};
-\node (oo33) at (9,-7) {$\textsc{\small C}^-$};
-\draw[<-,>=stealth] (i33) -- (d33.center);
-\draw[->,>=stealth] (ii33) -- (dd33.center);
-\draw[->,>=stealth] (d33.center) -- (dd33.center);
-\draw[->,>=stealth, shorten >=5pt] (d33.center) -- (o33.center);
-\draw[<-,>=stealth, shorten >=5pt] (dd33.center) -- (oo33.center);
-
-\node (i34) at (10,-5) {$\textsc{\small C}^-$};
-\node (ii34) at (11,-5) {$\textsc{\small C}^+$};
-\node (d34) at (10,-6) {};
-\node (dd34) at (11,-6) {};
-\draw[<-,>=stealth] (i34) -- (d34.center);
-\draw[->,>=stealth] (ii34) -- (dd34.center);
-\draw (d34.center) edge [-,>=stealth,bend right=90] (dd34.center);
-
-\end{tikzpicture}
-\]
-\caption{Growth rules}
-\label{fig:rules}
-\end{figure}
+We now present a version of the summation of the \textit{growth algorithm} \cite{petersen} in web form, which models the various possible interactions of edges-states, rephrased to the context of $D^3$. An example is shown in section \ref{tools}.
 
 The edges on the upper level can be seen as input nodes which, interacting with one another, produce zero, one or two output states. The soundness of each individual \textit{growth rule} is immediately obvious. On a higher level, what the growth algorithm achieves is to:
 \begin{enumerate}
@@ -359,21 +156,7 @@ At termination, the growth algorithm produces an $A_2$ web with no \textit{dangl
 \paragraph{Cardinality}
 The number of words produced by $D^3_n$, $| \! | D^3_n | \! |$, corresponds to the A005789 integer sequence\footnote{Refer to the Online Encyclopedia of Integer Sequences (\textit{OEIS})} \cite{moortgat}.
 Interestingly, the number of orbits $| \! | O(D) | \! |$ exhibits symmetricity between the alphabet size $d$ and the number of occurrences $n$, i.e. $| \! | O(D^n_d) | \! | = | \! | O(D^d_n) | \! |$.
-\begin{table}[h!]
-\begin{center}
-\begin{tabular}{c | c c c c c }
-$d \backslash n$ & 2 & 3 & 4 & 5 & 6\\
-\hline
-2 & 2 & 5 & 14 & 42 & 132\\
-\rowcolor{Gray}
-\ & 1 & 2 & 3 & 6 & 14\\
-3 & 5 & 42 & 462 & 6006 & 87516\\
-\rowcolor{Gray}
-\ & 2 & 6 & 44 & 406 & 4896\\
-\end{tabular}
-\end{center}
-\caption{Word and orbit (grayscale) cardinality of $D^d_n$}
-\end{table}
+
 \paragraph{Non-wellnestedness}
 The property of well-nestedness can be informally described as the absence of rules that permute the tuples of interacting states in such a way that their corresponding dependency trees interleave \cite{joshi}. A more formal definition is given by Salvati \cite{salvati}, which we will not include. In the case of $D^3$, cross-serial dependencies exist, violating the above constraint, and rendering $D^3$ non-wellnested.
 
@@ -525,15 +308,7 @@ Surprisingly, cases manageable by triple insertion could not be solved by the la
 &\forall \ \s{K} \in \mathcal{S} \setminus \s{W}:\\ 
 &\quad\quad\Or{\s{K}}{\s{K}}{t_{11} < t_{12},\ a < b < c}{2}
 \end{align*}
-\paragraph{G$_4$: Generalized triple insertion}
-The concept of triple insertion can be generalized; rather than simply adding terminals $a$, $b$ and $c$, we could add larger word segments through states $\s{A}^+$, $\s{B}^+$ and $\s{C}^+$. To do so, we need to model the concurrent interaction of these three states with any other state. Our abstractions are actually able to manage that, so we test another grammar which replaces the triple insertion with a \textit{triple state insertion}:
-\begin{align*}
-& \quad\quad\quad\quad \vdots \\
-&\forall \ \s{K} \in \mathcal{S} \setminus \s{W}:\\ 
-&\quad\quad\Or{\s{K}}{\s{K}, \s{A}^+, \s{B}^+, \s{C}^+}{t_{11} < t_{12},\\
-&\quad\quad\quad\quad t_{21} < t_{22} < t_{31} < t_{32} < t_{41} < t_{42}}{2}
-\end{align*}
-\paragraph{G$_5$: Refined non-terminals}
+\paragraph{G$_4$: Refined non-terminals}
 As the peak of our efforts, we replace non-terminals with their refined versions as presented in section \ref{aris}. $A^{+}(x,y)$ is now split into $A^{+}_{left}(x,y)$ and $A^{+}_{right}(x,y)$, with the extra $a$ residing in $x$ and $y$ in each case respectively. To generate this grammar, we use ARIS initialized with the following $\mathcal{D}$ map:
 
 \begin{minipage}{.2\textwidth}
@@ -567,7 +342,7 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 \hspace*{-.5cm}
 \begin{tikzpicture}
     \begin{axis}[
-        width  = 0.52*\textwidth,
+        width  = 0.32*\textwidth,
         height = 6cm,
         major x tick style = transparent,
         ybar=20,
@@ -599,17 +374,14 @@ We display three charts, depicting the number of rules, percentage of counter-ex
              coordinates {($ $,270)};
         \addplot[style={ppurple,fill=ppurple,mark=none}]
              coordinates {($ $,690)};
-        \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($ $,2034)};     
         \addplot[style={pyellow,fill=pyellow,mark=none}]
              coordinates {($ $,1456)};
     \end{axis}
 \end{tikzpicture}
-\\[12pt]
 % Counter-examples
 \begin{tikzpicture}
     \begin{axis}[
-        width  = 0.52*\textwidth,
+        width  = 0.32*\textwidth,
         height = 6cm,
         major x tick style = transparent,
         ybar=4*\pgflinewidth,
@@ -643,18 +415,15 @@ We display three charts, depicting the number of rules, percentage of counter-ex
              coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0.2) ($n=5$,0.8) ($n=6$,1.7)};
         \addplot[style={ppurple,fill=ppurple,mark=none}]
              coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.1)};
-        \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.07)};
         \addplot[style={pyellow,fill=pyellow,mark=none}]
              coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.05)};
 
     \end{axis}
 \end{tikzpicture}
-\\[12pt]
 % Computation Time
 \begin{tikzpicture}
     \begin{axis}[
-        width  = 0.52*\textwidth,
+        width  = 0.32*\textwidth,
         height = 6cm,
         major x tick style = transparent,
         ybar=4*\pgflinewidth,
@@ -688,8 +457,6 @@ We display three charts, depicting the number of rules, percentage of counter-ex
              coordinates {($n=2$,0) ($n=3$,1) ($n=4$,2.28) ($n=5$,3.54) ($n=6$,4.79)};
         \addplot[style={ppurple,fill=ppurple,mark=none}]
              coordinates {($n=2$,0) ($n=3$,1.04) ($n=4$,2.34) ($n=5$,3.64) ($n=6$,4.99)};
-        \addplot[style={pblack,fill=pblack,mark=none}]
-             coordinates {($n=2$,1.55) ($n=3$,2.82) ($n=4$,4.37) ($n=5$,5.42) ($n=6$,)};
         \addplot[style={pyellow,fill=pyellow,mark=none}]
              coordinates {($n=2$,0.17) ($n=3$,1.46) ($n=4$,2.77) ($n=5$,4.09) ($n=6$,5.42)};
         \legend{G$_0$,G$_1$,G$_2$,G$_3$,G$_4$,G$_5$}
@@ -790,7 +557,7 @@ We would like to thank Dr. Michael Moortgat for introducing us to the problem an
 
 %\newpage
 
-\bibliographystyle{acm}
+\bibliographystyle{splncs03}
 \bibliography{sources}
 
 \end{document}
