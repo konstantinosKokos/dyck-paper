@@ -10,3 +10,5 @@
 **/_minted*/
 *.bbl
 *.blg
+**.fdb_*
+**.fls
