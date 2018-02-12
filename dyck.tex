@@ -96,9 +96,9 @@ We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, us
 
 
 \section{Introduction}\label{sec1}
-Our goal with this paper is the analysis of the 3-dimensional Dyck Language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this chapter only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
+Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this chapter only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
 
-$D^3$ is defined over a lexigraphically ordered alphabet ($a$, $b$, $c$) as the generalized language of well-balanced parentheses\cite{moortgat}. We attempt to model $D^3$ via a 2-MCFG; the class of multiple context free grammars that operate on pairs of strings\cite{gotzmann}.
+$D^3$ is defined over a lexigraphically ordered alphabet ($a$, $b$, $c$) as the generalized language of well-balanced parentheses\cite{moortgat}. It is a subset of MIX\cite{kanazawa}, which has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. 
 
 There are a number of interesting correspondences to $D^3$. Firstly, a word of $D^3$ can be presented as a \textit{standard Young Tableau}, which is a rectangular table with strictly ascending rows/columns containing as entries the numbers $\{1,2,\dots,n\}$ where $n$ the  total number of symbols in the word. The Young Tableau can be obtained by placing (in order) each character's index to the row corresponding to its lexicographical ordering (e.g. an $a$ is placed on the first row)\cite{moortgat}. 
 
@@ -142,9 +142,7 @@ To set things off, we start with the grammar of \textit{triple insertion}. This 
   \end{minipage}
 \end{figure}
 
-Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns.
-
-\todo{straddling graph}
+Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.\ref{fig:fmp} for an example.
 \subsection{Meta-Grammars}
 To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig. \ref{fig:meta-ins}.
 
@@ -186,7 +184,7 @@ This meta-grammar, given below, consists of base cases for positive states, poss
 		\end{align*}
 		\end{minipage}
    \end{subfigure}
-    \caption{$\mathcal{G}_2$: Grammar of incomplete states}%
+    \caption{$\mathcal{G}_2$: Meta-grammar of incomplete states}%
     \label{fig:example}
 \end{figure}
 
@@ -207,6 +205,7 @@ As a solution to the aforementioned limitation, we propose a system that can aut
 
 Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors} as illustrated in Fig.\ref{fig:desc}.
 
+\vspace{-10pt}
 \hspace{-16pt}
 \begin{minipage}{.22\textwidth}
 \begin{figure}[H]
@@ -259,21 +258,54 @@ Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom
 \end{algorithm}
 \end{minipage}
 
+\vspace{10pt}
 Meta-grammars accelarated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. ARIS builds upon this notion to raise the level of abstraction even further; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
 
+\section{Tools \& Results}
+\subsection{Grammar Utilities}
+We have implemented the modelling techniques described in section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which provides the programmer with a \textit{domain-specific language} close to this paper's mathematical notation. To facilitate experimentation, our package includes features such as grammar selection, time measurements, word generation and soundness/completeness checking. The following example demonstrates the definition of $\mathcal{G}_1$:
 
-\subsection{Results}
-We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$. The charts reveal two obvious trends; as grammars get more complex, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with dramatically exploding computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (recall that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
-\begin{figure}[h!]
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+\begin{minted}[baselinestretch=1.1, fontsize=\small]{python}
+from dyck import *
+G_1 = Grammar([
+    ('S <- W', {(x, y)}),
+    O('W', {(a, b, c)}),
+    O('W <- W', {(x, y), (a, b, c)}),
+    O('W <- W, W', {(x, y), (z, w)}) 
+])
+\end{minted}
+\end{minipage}
+\end{center}
+
+
+\subsection{Visualization}
+As counter-examples began to grow in size and number, we realised the necessity of a visualization tool to assist us in identifying properties they may exhibit. To that end, we distribute another Python package, called \textbf{dyckviz}, which allows the simultaneous visualization of tableau-promotion and web-rotation (grouped in their corresponding equivalence classes). An example of a web as rendered by our tool is given in Fig.\ref{fig:web}.
+
+Young tableaux in an orbit are colour-grouped by their column indices, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the correponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated. 
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{web.pdf}
+\caption{Spider web of \w{abaacbbacbabaccbcc}}
+\label{fig:web}
+\end{center}
+\end{figure}
+
+
+\subsection{Grammar Comparisons}
+We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
+\begin{figure}[h]
 % Rule size
-\hspace*{-.5cm}
 \begin{tikzpicture}
     \begin{axis}[
-        width  = 0.32*\textwidth,
-        height = 6cm,
+        width  = 0.45\textwidth,
+        height = 4.2cm,
         major x tick style = transparent,
         ybar=20,
-        bar width=6pt,
+        bar width=4.5pt,
         ymajorgrids = true,
         ylabel = {\textsc{Rule size}},
         every axis x label/.style={
@@ -284,7 +316,7 @@ We display three charts, depicting the number of rules, percentage of counter-ex
         symbolic x coords={$ $},
         xtick = data,
         scaled y ticks = false,
-        enlarge x limits=0,
+        enlarge x limits=0.5,
         ymin=0,
         legend cell align=left,
         legend style={
@@ -305,55 +337,14 @@ We display three charts, depicting the number of rules, percentage of counter-ex
              coordinates {($ $,1456)};
     \end{axis}
 \end{tikzpicture}
-% Counter-examples
-\begin{tikzpicture}
-    \begin{axis}[
-        width  = 0.32*\textwidth,
-        height = 6cm,
-        major x tick style = transparent,
-        ybar=4*\pgflinewidth,
-        bar width=3pt,
-        ymajorgrids = true,
-        ylabel = {\textsc{Counter-examples} \small (\%)},
-        every axis x label/.style={
-  			  at={(ticklabel* cs:1.05)},
-  			  anchor=west,
-  			  },
-			every axis y label/.style={at={(current axis.north)},above=1mm},
-        symbolic x coords={$n=2$,$n=3$,$n=4$,$n=5$,$n=6$},
-        xtick = data,
-        scaled y ticks = false,
-        enlarge x limits=0.1,
-        ymin=0,
-        legend cell align=left,
-        legend style={
-        		at={(0.5,-0.15)},
-				anchor=north,
-				legend columns=-1
-			},
-		ytick={0, 2, ..., 17},
-		y grid style={densely dotted, line cap=round},
-    ]
-        \addplot[style={bblue,fill=bblue,mark=none}]
-            coordinates {($n=2$, 0) ($n=3$,0) ($n=4$,1.7) ($n=5$,6.42) ($n=6$,14.55)};
-        \addplot[style={rred,fill=rred,mark=none}]
-             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,1.5) ($n=5$,5) ($n=6$,10)};
-        \addplot[style={ggreen,fill=ggreen,mark=none}]
-             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0.2) ($n=5$,0.8) ($n=6$,1.7)};
-        \addplot[style={ppurple,fill=ppurple,mark=none}]
-             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.1)};
-        \addplot[style={pyellow,fill=pyellow,mark=none}]
-             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.05)};
-
-    \end{axis}
-\end{tikzpicture}
 % Computation Time
+\hspace{0.07\textwidth}
 \begin{tikzpicture}
     \begin{axis}[
-        width  = 0.32*\textwidth,
-        height = 6cm,
+        width  = 0.55*\textwidth,
+        height = 4cm,
         major x tick style = transparent,
-        ybar=4*\pgflinewidth,
+        ybar=5*\pgflinewidth,
         bar width=3pt,
         ymajorgrids = true,
         ylabel = {\textsc{Computation Time} \tiny log(sec)},
@@ -386,19 +377,62 @@ We display three charts, depicting the number of rules, percentage of counter-ex
              coordinates {($n=2$,0) ($n=3$,1.04) ($n=4$,2.34) ($n=5$,3.64) ($n=6$,4.99)};
         \addplot[style={pyellow,fill=pyellow,mark=none}]
              coordinates {($n=2$,0.17) ($n=3$,1.46) ($n=4$,2.77) ($n=5$,4.09) ($n=6$,5.42)};
+    \end{axis}
+\end{tikzpicture}
+% Counter-examples
+\begin{center}
+\begin{tikzpicture}
+    \begin{axis}[
+        width  = 1*\textwidth,
+        height = 4.5cm,
+        major x tick style = transparent,
+        ybar=4*\pgflinewidth,
+        bar width=3pt,
+        ymajorgrids = true,
+        ylabel = {\textsc{Counter-examples} \small (\%)},
+        every axis x label/.style={
+  			  at={(ticklabel* cs:1.05)},
+  			  anchor=west,
+  			  },
+			every axis y label/.style={at={(current axis.north)},above=1mm},
+        symbolic x coords={$n=2$,$n=3$,$n=4$,$n=5$,$n=6$},
+        xtick = data,
+        scaled y ticks = false,
+        enlarge x limits=0.1,
+        ymin=0,
+        legend cell align=left,
+        legend style={
+        		at={(0.5,-0.27)},
+				anchor=north,
+				legend columns=-1
+			},
+		ytick={0, 2, ..., 17},
+		y grid style={densely dotted, line cap=round},
+    ]
+        \addplot[style={bblue,fill=bblue,mark=none}]
+            coordinates {($n=2$, 0) ($n=3$,0) ($n=4$,1.7) ($n=5$,6.42) ($n=6$,14.55)};
+        \addplot[style={rred,fill=rred,mark=none}]
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,1.5) ($n=5$,5) ($n=6$,10)};
+        \addplot[style={ggreen,fill=ggreen,mark=none}]
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0.2) ($n=5$,0.8) ($n=6$,1.7)};
+        \addplot[style={ppurple,fill=ppurple,mark=none}]
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.3)};
+        \addplot[style={pyellow,fill=pyellow,mark=none}]
+             coordinates {($n=2$,0) ($n=3$,0) ($n=4$,0) ($n=5$,0) ($n=6$,0.15)};
         \legend{G$_0$,G$_1$,G$_2$,G$_3$,G$_4$,G$_5$}
     \end{axis}
 \end{tikzpicture}
-\\
+\end{center}
 \caption{Performance measures}
 \end{figure}
 
-\section{Road to completeness}\label{sec4}
-As the above results suggest, despite our best efforts the problem is yet unsolved. In this chapter we present a collection of unexplored ideas which we consider noteworthy. These ideas are related to the concept of formally concluding the completeness of a grammar, bypassing the computational problem of parsing through words in search of an example the tested grammar fails to generate.
+\section{Road to Completeness}\label{sec4}
+As the results suggest, the problem is yet unsolved. In this chapter we present a collection of unexplored ideas which we consider noteworthy.
 
-\subsection{First-match policy and Relinking}
-Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$, where $x_i$ the i-th occurrence of symbol $x$ in $w$. We call this process of matching the \textit{first-match policy}.
+\paragraph{\textbf{First-Match Policy and Relinking}}
+Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$, that would abide by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
 
+However, if rules existed that would allow for match-making and breaking, i.e. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together. This might be an interesting prospect to look into.
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[every node/.style={anchor=base},xscale=.25,yscale=.4]
@@ -424,65 +458,20 @@ Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n
 \draw (n9) edge [pyellow, bend right=90] (n11);
 \end{tikzpicture}
 \caption{First-match policy for \w{ababacbcabcc}}
+\label{fig:fmp}
 \end{figure}
-
-The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$ in such a way that the triplet inserted always corresponds to a triplet matched by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the rather arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$ (i.e. all different comma positions $i$ for $i \in 0,1...3n$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property.
-
-However, if rules existed that would allow for match-making and breaking, i.e. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together. This might be an interesting prospect to look into.
-\subsection{Growth Rules}
-The growth rules presented in section~\ref{fig:rules} are formally sound and complete. Part of them also have a very straightforward correspondence with some of our rules. For the other part, namely the growth rules which produce two edges, there is no direct way of translating them into a 2-MCFG. Adding memory to the grammar by adding states that describe two neighbouring edges might seem appealing but would not solve the problem; two neighbouring edges can in turn interact with their next neighbours in a recursive fashion, which can not be accommodated by our current tuple representation. We cannot, however, rule out the possibility of the growth rules being scalably translatable into m-MCFG rules. In fact, such a translation would be a guarantee of completeness.
-\subsection{Insights from promotion}
-The act of promotion translates to cyclic rotation of the $A_2$ web \cite{petersen}. Perhaps an interesting question here is whether promotion can be handled by a 2-MCFG (as a \textit{context-free rewriting system}). If that is the case, it could be worth looking into the properties of orbits, to test for instance if there are promotions within an orbit that can be easier to solve than others. Solving a single promotion and transducing the solution to all other words belonging to the same orbit could then be a guideline towards completeness. The scale of such a task would of course be much greater, but the combination of these theoretical backbones into a unified body, combined with our mostly applied approach, could shed some light on the problem at hand.
-
-\section{Tools}\label{tools}
-\subsection{Grammar utilities}
-We have implemented the modelling techniques we described in section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which essentially provides the programmer with a \textit{domain-specific language} very close to this paper's mathematical notation. The following example demonstrates the similariry with G$_1$, defined in section \ref{sec3}:
-\begin{minted}[baselinestretch=1.1, fontsize=\small]{python}
-from dyck import *
-G_1 = Grammar([
-    ('S <- W', {(x, y)}),
-    O('W', {(a, b, c)}),
-    O('W <- W', {(x, y), (a, b, c)}),
-    O('W <- W, W', {(x, y), (z, w)}),
-])
-\end{minted}
-
-It ships with several examples, showcasing meta-grammars and \textsc{ARIS}, as well as the complete set of implemented grammars defined in section \ref{sec3}. The package provides a lot of features, relevant to experimentation on m-MCFGs, such as:
-\begin{itemize}
-\item Grammar selection
-\item Time measurements
-\item Rule/parse pretty-printing
-\item Dyck-specific utilities
-	\begin{itemize}
-	\item Word generation
-	\item Soundness/completeness checking
-	\end{itemize}
-\item Grammar (de)serialization
-\end{itemize}
-
-\subsection{Visualization}
-As counter-examples began to grow in size and number, we realised the necessity of a visualization tool to mitigate the challenging task of identifying certain properties they exhibit.
-
-To that end, we distribute another Python package, called \textbf{dyckviz}, providing a command-line tool, which allows the simultaneous visualization of tableau-promotion and web-rotation (grouped in their corresponding equivalence classes).
-
-Young tableaux in an orbit are colored via the first-match-policy, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the correponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated.
-
-Webs in a certain orbit, on the other hand, are rendered in a single PDF file (one web per page). Note that we represent them in a slightly simplified way compared to their definition in section \ref{sec2}, ignoring intermediate graph nodes that do not have corresponding non-terminals, as shown below:
-\medskip
-\begin{figure}[h!]
-\includegraphics[width=1.05\columnwidth]{web.pdf}
-\caption{Spider web of \w{abaacbbacbabaccbcc}}
-\end{figure}
+\paragraph{\textbf{Growth Rules}}
+Although $\mathcal{G}_2$ comes close to realizing the growth algorithm, not all of the growth rules can be translated in a 2-MCFG setting. It would be an interesting endeavour to attempt to model the element-swapping behavior of these rules that produce two output states, without resorting to more expressive formalisms (e.g. context-sensitive grammars).
+\paragraph{\textbf{Insights from promotion}}
+An interesting question is whether promotion can be handled by a 2-MCFG (as a \textit{context-free rewriting system}). If so, it could be worth looking into the properties of orbits, to test for instance if there are promotions within an orbit that can be easier to solve than others. Solving a single promotion and transducing the solution to all equivalent words could then be a guideline towards completeness. 
 
 \section{Conclusion}
-We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some interesting techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tool suite available through the MCFParser and made it easier for it to accommodate MIX-style languages and systems of meta-grammars in general. 
+We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some interesting techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tools to accommodate MIX-style languages and systems of meta-grammars in general. 
 
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
 
 \section*{Acknowledgements}
 We would like to thank Dr. Michael Moortgat for introducing us to the problem and getting us started with valuable bibliography and some initial code.
-
-%\newpage
 
 \bibliographystyle{splncs03}
 \bibliography{sources}
