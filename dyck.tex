@@ -11,6 +11,9 @@
 \setmainfont{Liberation Sans}
 %\DeclareMathSizes{10}{8}{7}{6}
 
+\usepackage{subfigure}
+
+
 % Geometry
 \usepackage{geometry}
 \geometry{
@@ -34,7 +37,7 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 % Colors
-\usepackage{xcolor}
+\usepackage{xcolor, color, colortbl}
 \colorlet{CodeBg}{gray!90}
 \usepackage{color, colortbl}
 \definecolor{Gray}{rgb}{0.9,0.9,0.9}
@@ -44,6 +47,10 @@
 \definecolor{ppurple}{HTML}{6B1B7F}
 \definecolor{pblack}{HTML}{000000}
 \definecolor{pyellow}{HTML}{C0B225}
+% Links
+\usepackage{hyperref}
+\definecolor{linkcolour}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour}
 % Graphs
 \usepackage{tikz}
 \usetikzlibrary{calc}
@@ -66,8 +73,12 @@
 \newcommand{\Orderr}[5]{
 	\mathcal{#1}_{#5}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket.
 }
+\newcommand{\Orderrr}[5]{
+	\mathcal{#1}_{#5}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket
+}
 \newcommand{\Ord}[4]{\Order{O}{#1}{#2}{#3}{#4}}
 \newcommand{\Or}[4]{\Orderr{O}{#1}{#2}{#3}{#4}}
+\newcommand{\Orr}[4]{\Orderrr{O}{#1}{#2}{#3}{#4}}
 \newcommand{\Con}[4]{\Order{C}{#1}{#2}{#3}{#4}}
 
 \title{$D^3$ as a 2-MCFL}
@@ -96,10 +107,10 @@ Another correspondence exists between $D^3$ and combinatorial \textit{Spider Web
 A bijection links Young Tableaux with Spider Webs. Specifically, the \textit{Jeu-de-taquin} algorithm can be applied on a Young Tableau, which transforms it to another one through an act called \textit{promotion}. Subsequent promotions will eventually result in the initial tableau. Promotion thus defines an equivalence class, which we call an \textit{orbit}\cite{petersen}.
 
 \section{Modeling Techniques}\label{sec2}
-We now present a number of novel techniques that we developed as an attempt to solve the problem at hand, incrementally moving towards more complex and abstract grammars. For the purpose of experimentation we have implemented these techniques, based on a software library for parsing MCFGs\cite{ljunglof}. 
+We now present a number of novel techniques that we developed as an attempt to solve the problem at hand, incrementally moving towards more complex and abstract grammars. For the purpose of experimentation we have implemented these techniques, based on a software library for parsing MCFGs\cite{ljunglof}. The resulting Python code is open-source and available online\footnote{\url{https://github.com/omelkonian/dyck}}.
 
 \subsection{Triple Insertion}
-To set things off, we start with the grammar of \textit{triple insertion}. This grammar operates on non-terminals $\s{W}(x,y)$, producing a $\s{W}(x',y')$ with an additional triplet \textit{a, b, c} that respects the partial orders $x<y$ and $a<b<c$. The end-word is produced through the concatenation of $(x,y)$.
+To set things off, we start with the grammar of \textit{triple insertion}. This grammar operates on non-terminals $\s{W}(x,y)$, producing $\s{W}(x',y')$ with an additional triplet \textit{a, b, c} that respects the partial orders $x<y$ and $a<b<c$. The end-word is produced through the concatenation of $(x,y)$.
 
 \begin{figure}
   \begin{minipage}{0.45\textwidth}
@@ -118,59 +129,114 @@ To set things off, we start with the grammar of \textit{triple insertion}. This 
 	\end{align}
 	\caption{Grammar of triple insertions}
     \label{fig:1}
-  \end{minipage} \hspace{0.1\textwidth}
-  \begin{minipage}{0.45\textwidth}
+  \end{minipage} \hspace{0.05\textwidth}
+  \begin{minipage}{0.55\textwidth}
   	\centering
-    \begin{align*}
-    \setcounter{equation}{0}
-	\s{C}^-(\epsilon, xyzw) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
-	\s{C}^-(x, xyzw) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
-	\s{C}^-(xy, zw) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
-	\s{C}^-(xyz, w) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&. \\
-	\s{C}^-(xyzw, \epsilon) \leftarrow \s{A}^+(x,y),\ \s{B}^+(z,w)&.
+  	\begin{align*}
+	&\s{S}(xy) \leftarrow \s{W}(x,y). \\
+	&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
+	&\Or{\s{W}}{\s{W}}{x < y,\ a < b < c}{2}
 	\end{align*}
-	\caption{Interaction between $\s{A}^+$ and $\s{B}^+$}
-	\label{fig:interaction}
+	\caption{$\mathcal{G}_0$: Meta-grammar of triple insertions}
+	\label{fig:meta-ins}
   \end{minipage}
 \end{figure}
 
-
 Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns.
-\subsection{Adding States: Meta-Grammars}
-To counteract the limited performance of the above grammar, we introduce more states to describe incomplete words; that is, words that either have an extra symbol or miss one. The former are positive states, whereas the latter are negative. The addition of these extra states would allow for more intricate interactions. For instance, a state $\s{A}^{+}$ could interact with a $\s{B}^{+}$ to produce a $\s{C}^{-}$ in a multitude of different ways. Interestingly, there is a direct correspondence between these states and the nodes of Petersen's growth algorithm.
 
-These new emerging interactions vastly increase the amount of rules that need to be considered. Moreover, for each pair interaction, different constraints pertaining to the order of the permuted concatenated strings need to be preserved. This necessitates a more abstract view of the grammar as whole. To that end, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. We thereby reduce the manual labour required to transcribe and debug individual rules.
-\Ord{\s{C}^-}{\s{A}^+, \s{B}^+}{t_{11} < t_{12} < t_{21} < t_{22}}{2}
-As an example, we give the above meta-rule which demonstrates the interaction between $\s{A}^+$ and $\s{B}^+$ to produce a new $\s{C}^-$ state, as depicted in Fig.\ref{fig:interaction}.
+\todo{straddling graph}
+\subsection{Meta-Grammars}
+To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig. \ref{fig:meta-ins}.
 
-This additional abstraction, however, is not enough on its own. We still needed the ability to enforce additional constraints related not to the order, but rather the positions of concatenated strings. To make this clear, let us present the unique case of $B^{-}$. Unlike other negative states, $B^{-}(t_{11},\ t_{12})$ has no direct closure unless we actually know it to contain its extra $a$ in the left-side string $t_{11}$ and its extra $c$ in $t_{12}$ (we refer to this distinction between a position-blind and a position-aware state as \textit{refinement}). In that case alone are we allowed to insert the missing $b$ (e.g. as obtained from a $B^{+}(t_{21},\ t_{22})$ between $t_{11}$ and $t_{12}$. But in order to automatically generate $B^{-}$ states for which this additional condition holds, we need to keep note of the origin of the extra $a$ and $c$, and filter out the rules generated by $\mathcal{O}$ accordingly. We thus define $\mathcal{C}$ as a stricter version of $\mathcal{O}$, which constraints the rules according to the positions the premise tuples may occupy (after concatenation) in the conclusion's tuple.
-\Con{\textsc{B}^-}{\textsc{A}^+, \textsc{C}^+}{t_{11}^l < t_{12}^l,\ t_{21}^r < t_{22}^r}{2}
-In the above notation, we illustrate that $\textsc{B}^{-}$ may be constructed from $\textsc{A}^{+}(t_{11},\ t_{12})$ and $\textsc{C}^{+}(t_{21},\ t_{22})$ only as long as the partial orders $(t_{11},\ t_{12})$ and $(t_{21},\ t_{22})$ are independently satisfied and $t_{11}$, $t_{12}$ are both placed on the left element of the new state's tuples, while $t_{21}$ and $t_{22}$ on the right. This of course only allows for $\textsc{C}^{-}$ to consist of the tuple $(t_{11}t_{12},\ t_{21}t_{22})$.
+This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
+\[
+\mathcal{G}_1: \mathcal{G}_0 + \Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
+\]
 
-The above abstractions significantly accelarated the process of creating and testing grammars, as they allowed us to simply describe rules instead of explicitly defining them. We thus moved from the lower level of grammars to the higher level of \textit{meta-grammars}, or grammars of grammars. This strikes a resemblance to the notion of \textit{declarative programming}, where one only cares about what needs to be computed, rather than how.
+The addition of this rule gets us closer to completeness, but we are still not there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose states to describe incomplete words; that is, words that either have an extra symbol or miss one. The former are positive states, whereas the latter are negative. The inclusion of these extra states would allow for more intricate interactions. Interestingly, there is a direct correspondence between these states and the nodes of Petersen's growth algorithm.
 
-\subsection{Refining States: Rule Inference}\label{aris}	
-Perhaps expectedly, the improved performance of our new approach again proved insufficient to completely parse $D^3$. New problems started arising when trying to solve longer words; even though they were sound, our rules failed to make full use of the expressivity that a 2-MCFG allows. We soon realized that we have over-constrained our rules by making them comply to the worst-case scenario. Following the example of Fig.~\ref{fig:interaction}, if we had kept memory of the position of $a$ in a \textit{refined} version of  $A^{+}(x,y)$, we could allow new rules to exist, such as \[\s{C}^-(xz,wy) \leftarrow \s{A}^+_{left}(x,y),\ \s{B}^+(z,w).\] in the case of the extra $a$ residing in $x$. Splitting each state into multiple different, refined states that now provide knowledge of their extra characters' positions, we could model vastly more interactions.
+This meta-grammar, given below, consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one. 
+\begin{figure}
+    \centering
+    \begin{subfigure}{}
+		\begin{minipage}{.2\textwidth}
+		\begin{align*}
+		&\s{S}(xy) \leftarrow \s{W}(x,y). \\
+		&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
+		&\Or{\s{A}^+}{\epsilon}{a}{2} \\
+		&\Or{\s{B}^+}{\epsilon}{b}{2} \\
+		&\Or{\s{C}^+}{\epsilon}{c}{2} \\
+		&\Or{C^-}{A^+, B^+}{x < y < z < w}{2} \\
+		&\Or{B^-}{A^+, C^+}{x < y < z < w}{2}
+		\end{align*}
+		\end{minipage}
+	\end{subfigure}%
+	~ ~ ~
+    \begin{subfigure}{}
+	    \begin{minipage}{.2\textwidth}
+		\begin{align*}
+		&\Or{A^-}{B^+, C^+}{x < y < z < w}{2} \\
+		&\Or{A^+}{C^-, B^-}{x < y < z < w}{2} \\
+		&\Or{B^+}{C^-, A^-}{x < y < z < w}{2} \\
+		&\Or{C^+}{B^-, A^-}{x < y < z < w}{2} \\
+		&\Or{W}{A^+, A^-}{x < y < z < w}{2} \\
+		&\Or{W}{C^-, C^+}{x < y < z < w}{2} \\
+		&\forall \ \s{K} \in \{\textsc{A}^{+/-},\ \textsc{B}^{+/-},\ \textsc{C}^{+/-}\}:\\ 
+		&\quad\Or{\s{K}}{\s{K}, \s{W}}{x < y,\ z < w}{2}
+		\end{align*}
+		\end{minipage}
+   \end{subfigure}
+    \caption{$\mathcal{G}_2$: Grammar of incomplete states}%
+    \label{fig:example}
+\end{figure}
 
-At this point, the abstraction offered by our meta-grammars did not cover our needs anymore. The same difficulty that we had encountered before was prominent once more, except now at an even higher level. Transcribing meta-rules and proofreading them was time consuming and error-prone, effectively hindering our progress. In order to test a new hypothesis pertaining to the refined states we would again have to go through a lot of arid work.
+A further extension can be achieved through universally quantifying the notion of triple insertion, which is unique in the sense that it can insert three different terminals, each at a different position:
+\[
+\mathcal{G}_3: \mathcal{G}_2 + \forall \ \s{K} \in \{\textsc{A}^{+/-},\ \textsc{B}^{+/-},\ \textsc{C}^{+/-}\}: \Or{\s{K}}{\s{K}}{x < y,\ a < b < c}{2}
+\]
 
-As a solution to the aforementioned limitations, we designed a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies (up to an extent) the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of thοse interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
+\subsection{Rule Inference}\label{aris}	
+The improved performance of the above approaches again proved insufficient to completely parse $D^3$. Our meta-rules are over-constrained by imposing a total order on the tuple elements, due to their inability to keep track of where the extra character(s) is. To overcome this, we split each state into multiple position-aware, \textit{refined} states. Doing so revealed a vast amount of new interactions, as evidenced by the below alteration to the original $\s{A}^+$, $\s{B}^+$ interaction (where $y$ can now occur after $z$ or $w$):
+\[
+\Or{C^-}{A^+_{left}, B^+}{x < y, x < z < w}{2}
+\]
 
-Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors}.
+In order to accommodate the interactions between this increased number of states, we need to keep track of both internal and external order constraints. At this point, the abstraction offered by our meta-grammar approach does not cover our needs anymore. The same difficulty that we had encountered before is prominent once more, except now at an even higher level. 
 
-\begin{algorithm}
+As a solution to the aforementioned limitation, we propose a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of thοse interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
+
+Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors} as illustrated in Fig.\ref{fig:desc}.
+
+\hspace{-16pt}
+\begin{minipage}{.22\textwidth}
+\begin{figure}[H]
+\begin{align*}
+\s{W} &\mapsto (\epsilon, \epsilon) \\
+\s{A}^+_{l} &\mapsto (a, \epsilon) \\
+\s{A}^+_{r} &\mapsto (\epsilon, a) \\
+\s{B}^+_{l} &\mapsto (b, \epsilon)\\
+&... \\
+\s{B}^-_{l, r} &\mapsto (a, c) \\
+\s{C}^-_{l} &\mapsto (ab, \epsilon) \\
+\s{C}^-_{r} &\mapsto (\epsilon, ab) \\
+\s{C}^-_{l, r} &\mapsto (a, b)
+\end{align*}
+\caption{Map $\mathcal{D}$}
+\label{fig:desc}
+\end{figure}
+\end{minipage}
+\hspace{0.08\textwidth}
+\begin{minipage}{.68\textwidth}
+\begin{algorithm}[H]
 \caption{ARIS: Automatic Rule Inference System}\label{euclid}
 \begin{algorithmic}
 \Procedure{aris}{$\mathcal{D}$}
-	\For{$X \in dom(\mathcal{D})$}
-		\State $(d_1,\dots ,d_n) \leftarrow \mathcal{D}(X)$
+	\For{$X \mapsto (d_1,\dots ,d_n) \in \mathcal{D}$}
 		\State \textbf{yield} $X(d_1,\dots,d_n).$
 	\EndFor
-	\For{$x,Y \in dom(\mathcal{D})^2$}
-		\State $X_{ord} \leftarrow t_{11}<\dots<t_{1n}$ 
-		\State $Y_{ord} \leftarrow t_{21}<\dots<t_{2n}$ 
-		\State $new\_order \leftarrow \Or{\_}{X,Y}{X_{ord}, Y_{ord}}{2}$
-		\For{$(d_1,...,d_n) \in new\_order$}
+	\For{$X,Y \in dom(\mathcal{D})^2$}
+		\State $(X_{ord},\ Y_{ord}) \leftarrow (x<y<\dots,\ z<w<\dots)$ 
+		\For{$(d_1,...,d_n) \in \Orr{\_}{X,Y}{X_{ord}, Y_{ord}}{2}$}
 			\For{$S' \in \textsc{eliminate}((d_1,\dots ,d_n), \mathcal{D})$}
 				\State \textbf{yield} $S'(d_1,\dots ,d_n) \leftarrow X, Y.$
 			\EndFor
@@ -179,9 +245,9 @@ Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom
 \EndProcedure
 \\
 \Procedure{eliminate}{$(d_1,\dots ,d_n), \mathcal{D}$}
-	\For{$matches \in \textsc{match\_all}(t_1, ..., t_n)$}
+	\For{$matches \in \textsc{all\_abc\_triplets}(d_1,\dots ,d_n)$}
 		\For{$i \in 0\dots n/3$}
-			\For{$S' \in \textsc{remove\_all}(matches, i)$}
+			\For{$S' \in \textsc{remove\_abc\_triplets}(matches, i)$}
 				\If {$S' \in codom(\mathcal{D})$}
 					\State \textbf{yield} $S'$
 				\EndIf				
@@ -189,89 +255,13 @@ Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom
 		\EndFor
 	\EndFor
 \EndProcedure
-\\
-\Procedure{match\_all}{$t_1,...,t_n$}
-	\State \textbf{return} \textit{all possible ways to match a,b,c triplets}
-\EndProcedure
-\\
-\Procedure{remove\_all}{$matches, i$}
-	\State \textbf{return} \textit{all possible ways to annihilate i matches}
-\EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-Note that the above algorithm can easily be generalized to be applicable to the combination of an arbitrary number of states, but doing so would render it computationally infeasible. By using \textit{ARIS}, one needs only specify a grammar's states and its descriptors, thus eliminating the need to explicitly define rules or even meta-rules.
-
-\section{Implementation}\label{sec3}
-Enabled by the machinery described in the previous chapter we performed a multitude of tests using different grammars. In this chapter we describe a few of these grammars that we deem as milestones of our progression, in ascending order of complexity. We also present some statistics to allow for a direct comparison to be made between them. For the purposes of this project we use a version of MCFParser \cite{ljunglof} as our backend, which we adapted to our needs\footnote{The original can be found at https://github.com/heatherleaf/MCFParser.py}.
-\subsection{Grammars}
-In the grammars below, when applying meta-rules, we consider $t_{ij}$ to be the j-th tuple element of the i-th input state.
-\paragraph{G$_0$: Triple insertion}
-This very simple grammar consists of simply the rules of triple-insertion on a single non-terminal state $\s{W}(x,y)$, as described in chapter 2. Using the $\mathcal{O}$ abstraction, this grammar can be simply expressed as:
-\begin{align*}
-&\s{S}(xy) \leftarrow \s{W}(x,y). \\
-&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
-&\Or{\s{W}}{\s{W}}{t_{11} < t_{12},\ a < b < c}{2}
-\end{align*}
-\paragraph{G$_1$: Interleaving words}
-Benefiting from the added expressivity of $\mathcal{O}$, we can extend the previous grammar with a single meta-rule that allows two non-terminals $W(x,y)$, $W(z,w)$ to interact with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated.
-\vspace{-\topsep}
-\begin{align*}
-& \quad\quad\quad\quad \vdots \\
-&\Or{\s{W}}{\s{W}, \s{W}}{t_{11} < t_{12},\ t_{21} < t_{22}}{2}
-\end{align*}
-\paragraph{G$_2$: Incomplete words}
-This grammar largely expands upon the concept of state interaction of the previous grammar, replacing the idea of triple insertion with the use of non-terminals that correspond to types of incomplete words. There is a very clear and direct correspondence between this grammar and the non-swapping rules of the growth algorithm.
-\begin{align*}
-&\s{S}(xy) \leftarrow \s{W}(x,y). \\
-&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
-&\Or{\s{A}^+}{\epsilon}{a}{2} \\
-&\Or{\s{B}^+}{\epsilon}{b}{2} \\
-&\Or{\s{C}^+}{\epsilon}{c}{2} \\
-&\Or{\s{A}^-}{\epsilon}{b < c}{2} \\
-&\Or{\s{B}^-}{\epsilon}{a < c}{2} \\
-&\Or{\s{C}^-}{\epsilon}{a < b}{2} \\
-&\forall \ \s{K} \in \mathcal{S} \setminus \s{W}:\\ 
-&\quad\quad\Or{\s{K}}{\s{K}, \s{W}}{t_{11} < t_{12},\ t_{21} < t_{22}}{2}
-\end{align*}
-Where $\mathcal{S}$ the set of states defined within this grammar:
-\[
-\mathcal{S}= \{\textsc{W},\ \textsc{A}^{+/-},\ \textsc{B}^{+/-},\ \textsc{C}^{+/-}\}
-\]
-\paragraph{G$_3$: Universal triple insertion}
-Surprisingly, cases manageable by triple insertion could not be solved by the last grammar despite its elegance. After some thought, we realized that triple insertion is unique in the sense that it can insert three different terminals each at a different position, something that no other pair interaction can directly accomplish. We thus allowed triple insertion back into our last grammar, now at the level of each new state. To achieve this, we added the following universally quantified meta-rule:
-\begin{align*}
-& \quad\quad\quad\quad \vdots \\
-&\forall \ \s{K} \in \mathcal{S} \setminus \s{W}:\\ 
-&\quad\quad\Or{\s{K}}{\s{K}}{t_{11} < t_{12},\ a < b < c}{2}
-\end{align*}
-\paragraph{G$_4$: Refined non-terminals}
-As the peak of our efforts, we replace non-terminals with their refined versions as presented in section \ref{aris}. $A^{+}(x,y)$ is now split into $A^{+}_{left}(x,y)$ and $A^{+}_{right}(x,y)$, with the extra $a$ residing in $x$ and $y$ in each case respectively. To generate this grammar, we use ARIS initialized with the following $\mathcal{D}$ map:
-
-\begin{minipage}{.2\textwidth}
-\begin{align*}
-\s{W} &\mapsto (\epsilon, \epsilon) \\
-\s{A}^+_{l} &\mapsto (a, \epsilon) \\
-\s{A}^+_{r} &\mapsto (\epsilon, a) \\
-\s{B}^+_{l} &\mapsto (b, \epsilon) \\
-\s{B}^+_{r} &\mapsto (\epsilon, b) \\
-\s{C}^+_{l} &\mapsto (c, \epsilon) \\
-\s{C}^+_{r} &\mapsto (\epsilon, c) \\
-\s{A}^-_{l} &\mapsto (bc, \epsilon) 
-\end{align*}
 \end{minipage}
-\begin{minipage}{.2\textwidth}
-\begin{align*}
-\s{A}^-_{r} &\mapsto (\epsilon, bc) \\
-\s{A}^-_{l, r} &\mapsto (b, c) \\
-\s{B}^-_{l} &\mapsto (ac, \epsilon) \\
-\s{B}^-_{r} &\mapsto (\epsilon, ac) \\
-\s{B}^-_{l, r} &\mapsto (a, c) \\
-\s{C}^-_{l} &\mapsto (ab, \epsilon) \\
-\s{C}^-_{r} &\mapsto (\epsilon, ab) \\
-\s{C}^-_{l, r} &\mapsto (a, b)
-\end{align*}
-\end{minipage}
+
+Meta-grammars accelarated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. ARIS builds upon this notion to raise the level of abstraction even further; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
+
+
 \subsection{Results}
 We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$. The charts reveal two obvious trends; as grammars get more complex, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with dramatically exploding computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (recall that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
 \begin{figure}[h!]
