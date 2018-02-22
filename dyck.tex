@@ -1,16 +1,7 @@
 \documentclass[nonatbib,numbers,10pt]{llncs}
 
-% Font
-%\usepackage[scaled]{helvet}
-%\renewcommand\familydefault{\sfdefault} 
-%\usepackage[T1]{fontenc}
-
 \usepackage{fontspec}
-%\setmainfont{Nimbus Sans L}
-%\setmainfont{Phetsarath OT}
 \setmainfont{Liberation Sans}
-%\DeclareMathSizes{10}{8}{7}{6}
-
 \usepackage{subfigure}
 
 
@@ -50,7 +41,7 @@
 % Links
 \usepackage{hyperref}
 \definecolor{linkcolour}{rgb}{0,0.2,0.6}
-\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour,citecolor=linkcolour}
 % Graphs
 \usepackage{tikz}
 \usetikzlibrary{calc}
@@ -98,7 +89,7 @@ We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, us
 \section{Introduction}\label{sec1}
 Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this chapter only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
 
-$D^3$ is defined over a lexigraphically ordered alphabet ($a$, $b$, $c$) as the generalized language of well-balanced parentheses\cite{moortgat}. It is a subset of MIX\cite{kanazawa}, which has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. 
+$D^3$ is defined over a lexicographically ordered alphabet ($a$, $b$, $c$) as the generalized language of well-balanced parentheses\cite{moortgat}. It is a subset of MIX\cite{kanazawa}, which has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. 
 
 There are a number of interesting correspondences to $D^3$. Firstly, a word of $D^3$ can be presented as a \textit{standard Young Tableau}, which is a rectangular table with strictly ascending rows/columns containing as entries the numbers $\{1,2,\dots,n\}$ where $n$ the  total number of symbols in the word. The Young Tableau can be obtained by placing (in order) each character's index to the row corresponding to its lexicographical ordering (e.g. an $a$ is placed on the first row)\cite{moortgat}. 
 
@@ -144,16 +135,16 @@ To set things off, we start with the grammar of \textit{triple insertion}. This 
 
 Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.\ref{fig:fmp} for an example.
 \subsection{Meta-Grammars}
-To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig. \ref{fig:meta-ins}.
+To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig. \ref{fig:meta-ins}.
 
 This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
 \[
 \mathcal{G}_1: \mathcal{G}_0 + \Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
 \]
 
-The addition of this rule gets us closer to completeness, but we are still not there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose states to describe incomplete words; that is, words that either have an extra symbol or miss one. The former are positive states, whereas the latter are negative. The inclusion of these extra states would allow for more intricate interactions. Interestingly, there is a direct correspondence between these states and the nodes of Petersen's growth algorithm.
+The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions. Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm.
 
-This meta-grammar, given below, consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one. 
+This meta-grammar, given below, consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one (i.e. non-terminal $\s{W}$).
 \begin{figure}
     \centering
     \begin{subfigure}{}
@@ -199,9 +190,9 @@ The improved performance of the above approaches again proved insufficient to co
 \Or{C^-}{A^+_{left}, B^+}{x < y, x < z < w}{2}
 \]
 
-In order to accommodate the interactions between this increased number of states, we need to keep track of both internal and external order constraints. At this point, the abstraction offered by our meta-grammar approach does not cover our needs anymore. The same difficulty that we had encountered before is prominent once more, except now at an even higher level. 
+In order to accommodate the interactions between this increased number of states, we need to keep track of both internal and external order constraints. At this point, the abstraction offered by our meta-grammar approach does not cover our needs any more. The same difficulty that we had encountered before is prominent once more, except now at an even higher level. 
 
-As a solution to the aforementioned limitation, we propose a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of thοse interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
+As a solution to the aforementioned limitation, we propose a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of those interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
 
 Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors} as illustrated in Fig.\ref{fig:desc}.
 
@@ -259,7 +250,7 @@ Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom
 \end{minipage}
 
 \vspace{10pt}
-Meta-grammars accelarated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. ARIS builds upon this notion to raise the level of abstraction even further; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
+Meta-grammars accelerated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. ARIS builds upon this notion to raise the level of abstraction even further; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
 
 \section{Tools \& Results}
 \subsection{Grammar Utilities}
@@ -283,7 +274,7 @@ G_1 = Grammar([
 \subsection{Visualization}
 As counter-examples began to grow in size and number, we realised the necessity of a visualization tool to assist us in identifying properties they may exhibit. To that end, we distribute another Python package, called \textbf{dyckviz}, which allows the simultaneous visualization of tableau-promotion and web-rotation (grouped in their corresponding equivalence classes). An example of a web as rendered by our tool is given in Fig.\ref{fig:web}.
 
-Young tableaux in an orbit are colour-grouped by their column indices, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the correponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated. 
+Young tableaux in an orbit are colour-grouped by their column indices, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the corresponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated. 
 
 
 \begin{figure}
@@ -296,7 +287,7 @@ Young tableaux in an orbit are colour-grouped by their column indices, which she
 
 
 \subsection{Grammar Comparisons}
-We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion).
+We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion)\cite{moortgat}.
 \begin{figure}[h]
 % Rule size
 \begin{tikzpicture}
@@ -427,12 +418,12 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 \end{figure}
 
 \section{Road to Completeness}\label{sec4}
-As the results suggest, the problem is yet unsolved. In this chapter we present a collection of unexplored ideas which we consider noteworthy.
+To our knowledge, no other attempt has come so close to modelling $D^3$ with a 2-MCFG. We attribute this to the combination of a pragmatic approach with results from existing theoretical work. In this chapter, we present a collection of additional ideas, which we consider worthy of further exploration.
 
 \paragraph{\textbf{First-Match Policy and Relinking}}
 Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$, that would abide by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
 
-However, if rules existed that would allow for match-making and breaking, i.e. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together. This might be an interesting prospect to look into.
+However, if rules existed that would allow for match-making and breaking, i.e. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together.
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[every node/.style={anchor=base},xscale=.25,yscale=.4]
@@ -461,17 +452,17 @@ However, if rules existed that would allow for match-making and breaking, i.e. m
 \label{fig:fmp}
 \end{figure}
 \paragraph{\textbf{Growth Rules}}
-Although $\mathcal{G}_2$ comes close to realizing the growth algorithm, not all of the growth rules can be translated in a 2-MCFG setting. It would be an interesting endeavour to attempt to model the element-swapping behavior of these rules that produce two output states, without resorting to more expressive formalisms (e.g. context-sensitive grammars).
+Although $\mathcal{G}_2$ comes close to realizing the growth algorithm, not all of the growth rules can be translated into a 2-MCFG setting. It would be an interesting endeavour to attempt to model the element-swapping behaviour of these rules that produce two output states, without resorting to more expressive formalisms (e.g. context-sensitive grammars).
 \paragraph{\textbf{Insights from promotion}}
 An interesting question is whether promotion can be handled by a 2-MCFG (as a \textit{context-free rewriting system}). If so, it could be worth looking into the properties of orbits, to test for instance if there are promotions within an orbit that can be easier to solve than others. Solving a single promotion and transducing the solution to all equivalent words could then be a guideline towards completeness. 
 
 \section{Conclusion}
-We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some interesting techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tools to accommodate MIX-style languages and systems of meta-grammars in general. 
+We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some novel techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tools to accommodate MIX-style languages and systems of meta-grammars in general.
 
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
 
 \section*{Acknowledgements}
-We would like to thank Dr. Michael Moortgat for introducing us to the problem and getting us started with valuable bibliography and some initial code.
+We would like to thank Dr. Michael Moortgat for introducing us to the problem.
 
 \bibliographystyle{splncs03}
 \bibliography{sources}
