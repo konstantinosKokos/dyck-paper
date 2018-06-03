@@ -87,15 +87,114 @@ We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, us
 
 
 \section{Introduction}\label{sec1}
-Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this chapter only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
+Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this section only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
 
-$D^3$ is defined over a lexicographically ordered alphabet ($a$, $b$, $c$) as the generalized language of well-balanced parentheses\cite{moortgat}. It is a subset of MIX\cite{kanazawa}, which has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. 
+\subsection{Preliminaries}
+We use $D^3$ to refer to the Dyck language over the lexicographically ordered alphabet $a < b < c$, which generalizes well-bracketed parentheses over three symbols. Denoting with $\#x(w)$ the number of occurrences of symbol $x$ within word $w$, any word in $D^3$ satisfies the following conditions:
+\begin{itemize}
+\item[(D1)] $ \#a(w) = \#b(w) = \#c(w) $
+\item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall v \in prefixOf(w)$
+\end{itemize}
 
-There are a number of interesting correspondences to $D^3$. Firstly, a word of $D^3$ can be presented as a \textit{standard Young Tableau}, which is a rectangular table with strictly ascending rows/columns containing as entries the numbers $\{1,2,\dots,n\}$ where $n$ the  total number of symbols in the word. The Young Tableau can be obtained by placing (in order) each character's index to the row corresponding to its lexicographical ordering (e.g. an $a$ is placed on the first row)\cite{moortgat}. 
+Eliding the second condition (D2), we get the $MIX$ language, which represents free word order
+over the same alphabet\cite{kanazawa}. The extreme degree of 'scrambling' permitted in a language is considered linguistically irrelevant\cite{joshi}.
 
-Another correspondence exists between $D^3$ and combinatorial \textit{Spider Webs}, a special category of directed planar graphs embedded on a disk\cite{petersen}. Spider Webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}, which operates on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. At termination, this process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word.
+$D^3$, on the other hand, enforces structural constraints, bringing it closer to natural languages.
+Additionally, $MIX$ has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
 
-A bijection links Young Tableaux with Spider Webs. Specifically, the \textit{Jeu-de-taquin} algorithm can be applied on a Young Tableau, which transforms it to another one through an act called \textit{promotion}. Subsequent promotions will eventually result in the initial tableau. Promotion thus defines an equivalence class, which we call an \textit{orbit}\cite{petersen}.
+\subsection{Correspondences}
+\paragraph{\textbf{Young Tableaux}}
+A standard Young Tableau is defined as an assortment of $n$ boxes into a ragged (or jagged, i.e. non-rectangular) matrix containing the integers $1$ through $n$ and arranged in such a way that the entries are strictly increasing over the rows (from left to right) and columns (from top to bottom). Reading off the entries of the boxes, one may obtain the \textit{Yamanouchi} word by placing (in order) each character's index to the row corresponding to its lexicographical ordering.
+
+In the case of $D^3$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times 3$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $3n$, where $n$ is the number of occurrences of each unique symbol\cite{moortgat}.
+Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableau of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example below:
+\begin{figure}[h!]
+	\centering
+	\begin{tabular}{rl}
+%		\setlength{\tabcolsep}{10pt}
+		\begin{tabular}{r}
+		a: \\ b: \\ c:
+		\end{tabular}
+		&
+	    \begin{tabular}{| c | c | c | c | c | c |}
+    		\hline
+	    1 & 3 & 4 & 8 & 9 & 10 \\
+    		\hline
+	    2 & 5 & 7 & 11 & 13 & 15 \\
+	    \hline
+	    6 & 12 & 14 & 16 & 17 & 18 \\
+    		\hline
+	    \end{tabular}
+	\end{tabular}
+  	\caption{Young tableau for \w{abaabcbaaabcbcbccc}}
+\end{figure}
+
+\paragraph{\textbf{Promotions and Orbits}}
+There is an interesting transformation on Young Tableaux, namely the \textit{Jeu-de-taquin} algorithm. When operating on a rectangular tableau $T(n,3)$, Jeu-de-taquin consists of the following steps:
+\begin{enumerate}
+\item[(1)] Reduce all elements of T by 1 and replace the first item of the first row with an empty box $ \Box (x,y) := (1,1)$.
+\item[(2)] While the empty box is not at the bottom right corner of T, $ \Box(x,y) \neq (n,3)$, do:
+\begin{enumerate}
+\item[-] Pick the minimum of the elements directly to the right and below the empty box, and swap the empty box with it. $ T(x, y) := min(T_{(x+1,y)}, T_{(x,y+1)})$, $ \Box (x',y') := (x+1, y)$ (in the case of a right-swap) or $\Box (x',y') := (x,y+1)$ (in the case of a down-swap).
+\end{enumerate}
+\item[(3)] Replace the empty box with $3n$.
+\end{enumerate}
+
+The tableau obtained through Jeu-de-taquin on T is called its promotion $p(T)$. We denote by $p^k(T)$, $k$ successive applications of Jeu-de-taquin. It has been proven that $p^{3n}(T)=T$\cite{haiman}. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^3$ into disjoint sets, i.e. every word $w$ belongs to a particular orbit, obtained by promotions of $T_w$.
+
+\paragraph{\textbf{$\mathbf{A_2}$ Combinatorial Spider Webs}}
+The $A_2$ \textit{irreducible combinatorial spider web} is a directed planar graph embedded in a disk that satisfies certain conditions \cite{kuperberg}. Spider webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}\cite{petersen}. These operate on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. Growth rules will be examined from a grammatical perspective in Section \ref{subsec22}. Upon reaching a fixpoint, the growth process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word\cite{moortgat,petersen}.
+
+A bijection also links Young Tableaux with Spider Webs. More specifically, the act of promotion is isomorphic to a combinatorial action on spider webs, namely \textit{web rotation}\cite{petersen}.
+
+\paragraph{\textbf{Constrained Walk}}
+A Dyck word can also be visualized as a constrained \textit{walk} within the first quadrant of $\mathbb{Z}^2$. We can assign each alphabet symbol $x$ a vector value $\vec{v_x} \in \mathbb{Z}^2$ such that all pairs of $(\vec{v_x},\ \vec{v_y})$ are linearly independent and:
+\begin{eqnarray}
+\vec{v_a} + \vec{v_b} + \vec{v_c} &=& \vec{0} \\
+\kappa\vec{v_a} + \lambda\vec{v_b} + \mu\vec{v_c} &\geq & \vec{0},  (\forall \kappa \geq \lambda \geq \mu)
+\end{eqnarray}
+
+We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk is depicted in Fig. \ref{fig:walk}.
+
+\begin{figure}[h!]
+    \begin{center}
+   
+    \begin{tikzpicture}[
+    	scale=1,
+    	-->/.style={->,thick,shorten >=.666pt,shorten <=.666pt},
+    ]
+    \draw[loosely dotted] (0,0) grid (3,3);
+    \path[use as bounding box] (-2,1) rectangle (3,3);
+    \draw[->] (-0.25,0) -- (3.5,0) node[right] {$x$};
+    \draw[->] (0,-0.25) -- (.,3.5) node[left] {$y$};
+    \foreach \x/\xtext in {1/1, 2/2, 3/3}
+    \draw[shift={(\x,0)}] (0pt,2pt) -- (0pt,-2pt) node[below] {$\xtext$};
+    \foreach \y/\ytext in {1/1, 2/2, 3/3}
+    \draw[shift={(0,\y)}] (2pt,0pt) -- (-2pt,0pt) node[left] {$\ytext$};
+    \draw [bblue, -->] (0,0) -- node[left] {\tiny{(1)}} (0,1);
+    \draw [rred, -->] (0,1) -- node[below] {\tiny{(2)}} (1,0);
+    \draw [bblue, -->] (1,0) -- node[left] {\tiny{(3)}} (1,1);
+    \draw [bblue, -->] (1,1) -- node[left] {\tiny{(4)}} (1,2);
+	\draw [rred, -->] (1,2) -- node[below] {\tiny{(5)}} (2,1);
+	\draw [rred, -->] (1,1) -- node[below] {\tiny{(7)}} (2,0);
+	\draw [bblue, -->] (2,0) -- node[left] {\tiny{(8)}} (2,1);
+    \draw [bblue, -->] (2,1) -- node[left] {\tiny{(9)}} (2,2);
+    \draw [bblue, -->] (2,2) -- node[left] {\tiny{(10)}} (2,3);
+    \draw [rred, -->] (2,3) -- node[below] {\tiny{(11)}}(3,2);
+	\draw [ggreen, -->] (3,2) -- node[below] {\tiny{(12)}} (2,2);
+	\draw [rred, -->] (2,2) -- node[below] {\tiny{(13)}} (3,1);
+	\draw [ggreen, -->] (3,1) -- node[below] {\tiny{(14)}} (2,1);-
+	\draw [ggreen, -->] (2,1) -- node[below] {\tiny{(6)}} (1,1);
+    \draw [rred, -->] (2,1) -- node[below] {\tiny{(15)}} (3,0);
+	\draw [ggreen, -->] (3,0) -- node[below] {\tiny{(16)}} (2,0);
+	\draw [ggreen, -->] (2,0) -- node[below] {\tiny{(17)}} (1,0);
+	\draw [ggreen, -->] (1,0) -- node[below] {\tiny{(18)}} (0,0);
+    \draw[fill=orange,color=black] circle (0.75pt);
+    \end{tikzpicture}    
+    \end{center}
+\caption{The constrained walk of \w{abaabcbaaabcbcbccc} with vector value assignments $\vec{v}_a = (1,0)$, $\vec{v}_b = (-1,1)$, $\vec{v}_c = (0,-1)$}
+\label{fig:walk}
+\end{figure}
 
 \section{Modeling Techniques}\label{sec2}
 We now present a number of novel techniques that we developed as an attempt to solve the problem at hand, incrementally moving towards more complex and abstract grammars. For the purpose of experimentation we have implemented these techniques, based on a software library for parsing MCFGs\cite{ljunglof}. The resulting Python code is open-source and available online\footnote{\url{https://github.com/omelkonian/dyck}}.
@@ -134,7 +233,7 @@ To set things off, we start with the grammar of \textit{triple insertion}. This 
 \end{figure}
 
 Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.\ref{fig:fmp} for an example.
-\subsection{Meta-Grammars}
+\subsection{Meta-Grammars}\label{subsec22}
 To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig. \ref{fig:meta-ins}.
 
 This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
@@ -142,7 +241,158 @@ This approach enhances the potential expressivity of our grammars as well. For i
 \mathcal{G}_1: \mathcal{G}_0 + \Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
 \]
 
-The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions. Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm.
+The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions. Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}.
+
+\begin{figure}[h!]
+\[
+\begin{tikzpicture}[
+every node/.style={anchor=base},xscale=.725,yscale=1.1,
+-->/.style={->,shorten >=2pt,shorten <=2pt,>=stealth},
+<--/.style={<-,shorten >=2pt,shorten <=2pt,>=stealth},
+--->/.style={->,shorten >=1pt,shorten <=1pt,>=stealth},
+<---/.style={<-,>=stealth},
+]
+\node (i1) at (0,0) {$\textsc{\small A}^+$};
+\node (ii1) at (1,0) {$\textsc{\small B}^+$};
+\node (d1) at (.5,-1) {};
+\node (o1) at (.5,-2) {$\textsc{\small C}^-$};
+\draw[-->] (i1) -- (d1.center);
+\draw[-->] (ii1) -- (d1.center);
+\draw[<--] (d1.north) -- (o1);
+
+\node (i2) at (2,0) {$\textsc{\small B}^+$};
+\node (ii2) at (3,0) {$\textsc{\small C}^+$};
+\node (d2) at (2.5,-1) {};
+\node (o2) at (2.5,-2) {$\textsc{\small A}^-$};
+\draw[-->] (i2) -- (d2.center);
+\draw[-->] (ii2) -- (d2.center);
+\draw[<--] (d2.north) -- (o2);
+
+\node (i3) at (4,0) {$\textsc{\small A}^+$};
+\node (ii3) at (5,0) {$\textsc{\small C}^+$};
+\node (d3) at (4.5,-1) {};
+\node (o3) at (4.5,-2) {$\textsc{\small B}^-$};
+\draw[-->] (i3) -- (d3.center);
+\draw[-->] (ii3) -- (d3.center);
+\draw[<--] (d3.north) -- (o3);
+
+\node (i4) at (6,0) {$\textsc{\small B}^-$};
+\node (ii4) at (7,0) {$\textsc{\small A}^-$};
+\node (d4) at (6.5,-1) {};
+\node (o4) at (6.5,-2) {$\textsc{\small C}^+$};
+\draw[<-,>=stealth] (i4) -- (d4.center);
+\draw[<-,>=stealth] (ii4) -- (d4.center);
+\draw[->,>=stealth] (d4.center) -- (o4);
+
+\node (i5) at (8,0) {$\textsc{\small C}^-$};
+\node (ii5) at (9,0) {$\textsc{\small A}^-$};
+\node (d5) at (8.5,-1) {};
+\node (o5) at (8.5,-2) {$\textsc{\small B}^+$};
+\draw[<-,>=stealth] (i5) -- (d5.center);
+\draw[<-,>=stealth] (ii5) -- (d5.center);
+\draw[->,>=stealth] (d5.center) -- (o5);
+
+\node (i6) at (10,0) {$\textsc{\small C}^-$};
+\node (ii6) at (11,0) {$\textsc{\small B}^-$};
+\node (d6) at (10.5,-1) {};
+\node (o6) at (10.5,-2) {$\textsc{\small A}^+$};
+\draw[<-,>=stealth] (i6) -- (d6.center);
+\draw[<-,>=stealth] (ii6) -- (d6.center);
+\draw[->,>=stealth] (d6.center) -- (o6);
+
+\node (i21) at (.5,-2.5) {$\textsc{\small B}^+$};
+\node (ii21) at (2.5,-2.5) {$\textsc{\small B}^-$};
+\node (d21) at (1,-3.5) {};
+\node (dd21) at (2,-3.5) {};
+\node (o21) at (.5,-4.5) {$\textsc{\small A}^-$};
+\node (oo21) at (2.5,-4.5) {$\textsc{\small A}^-$};
+\draw[->,>=stealth] (i21) -- (d21.center);
+\draw[<-,>=stealth] (ii21) -- (dd21.center);
+\draw[<-,>=stealth] (d21.center) -- (dd21.center);
+\draw[<-,>=stealth, shorten >=5pt] (d21.center) -- (o21.center);
+\draw[->,>=stealth, shorten >=5pt] (dd21.center) -- (oo21.center);
+
+\node (i22) at (3.75,-2.5) {$\textsc{\small B}^+$};
+\node (ii22) at (5.75,-2.5) {$\textsc{\small A}^-$};
+\node (d22) at (4.25,-3.5) {};
+\node (dd22) at (5.25,-3.5) {};
+\node (o22) at (3.75,-4.5) {$\textsc{\small A}^-$};
+\node (oo22) at (5.75,-4.5) {$\textsc{\small B}^+$};
+\draw[->,>=stealth] (i22) -- (d22.center);
+\draw[<-,>=stealth] (ii22) -- (dd22.center);
+\draw[<-,>=stealth] (d22.center) -- (dd22.center);
+\draw[<-,>=stealth, shorten >=5pt] (d22.center) -- (o22.center);
+\draw[->,>=stealth, shorten >=5pt] (dd22.center) -- (oo22.center);
+
+\node (i23) at (7,-2.5) {$\textsc{\small A}^+$};
+\node (ii23) at (9,-2.5) {$\textsc{\small B}^-$};
+\node (d23) at (7.5,-3.5) {};
+\node (dd23) at (8.5,-3.5) {};
+\node (o23) at (7,-4.5) {$\textsc{\small B}^-$};
+\node (oo23) at (9,-4.5) {$\textsc{\small A}^+$};
+\draw[->,>=stealth] (i23) -- (d23.center);
+\draw[<-,>=stealth] (ii23) -- (dd23.center);
+\draw[<-,>=stealth] (d23.center) -- (dd23.center);
+\draw[<-,>=stealth, shorten >=5pt] (d23.center) -- (o23.center);
+\draw[->,>=stealth, shorten >=5pt] (dd23.center) -- (oo23.center);
+
+\node (i24) at (10,-2.5) {$\textsc{\small A}^+$};
+\node (ii24) at (11,-2.5) {$\textsc{\small A}^-$};
+\node (d24) at (10,-3.5) {};
+\node (dd24) at (11,-3.5) {};
+\draw[->,>=stealth] (i24) -- (d24.center);
+\draw[<-,>=stealth] (ii24) -- (dd24.center);
+\draw (d24.center) edge [-,>=stealth,bend right=90] (dd24.center);
+
+\node (i31) at (.5,-5) {$\textsc{\small B}^-$};
+\node (ii31) at (2.5,-5) {$\textsc{\small B}^+$};
+\node (d31) at (1,-6) {};
+\node (dd31) at (2,-6) {};
+\node (o31) at (.5,-7) {$\textsc{\small C}^+$};
+\node (oo31) at (2.5,-7) {$\textsc{\small C}^-$};
+\draw[<-,>=stealth] (i31) -- (d31.center);
+\draw[->,>=stealth] (ii31) -- (dd31.center);
+\draw[->,>=stealth] (d31.center) -- (dd31.center);
+\draw[->,>=stealth, shorten >=5pt] (d31.center) -- (o31.center);
+\draw[<-,>=stealth, shorten >=5pt] (dd31.center) -- (oo31.center);
+
+\node (i32) at (3.75,-5) {$\textsc{\small B}^-$};
+\node (ii32) at (5.75,-5) {$\textsc{\small C}^+$};
+\node (d32) at (4.25,-6) {};
+\node (dd32) at (5.25,-6) {};
+\node (o32) at (3.75,-7) {$\textsc{\small C}^+$};
+\node (oo32) at (5.75,-7) {$\textsc{\small B}^-$};
+\draw[<-,>=stealth] (i32) -- (d32.center);
+\draw[->,>=stealth] (ii32) -- (dd32.center);
+\draw[->,>=stealth] (d32.center) -- (dd32.center);
+\draw[->,>=stealth, shorten >=5pt] (d32.center) -- (o32.center);
+\draw[<-,>=stealth, shorten >=5pt] (dd32.center) -- (oo32.center);
+
+\node (i33) at (7,-5) {$\textsc{\small C}^-$};
+\node (ii33) at (9,-5) {$\textsc{\small B}^+$};
+\node (d33) at (7.5,-6) {};
+\node (dd33) at (8.5,-6) {};
+\node (o33) at (7,-7) {$\textsc{\small B}^+$};
+\node (oo33) at (9,-7) {$\textsc{\small C}^-$};
+\draw[<-,>=stealth] (i33) -- (d33.center);
+\draw[->,>=stealth] (ii33) -- (dd33.center);
+\draw[->,>=stealth] (d33.center) -- (dd33.center);
+\draw[->,>=stealth, shorten >=5pt] (d33.center) -- (o33.center);
+\draw[<-,>=stealth, shorten >=5pt] (dd33.center) -- (oo33.center);
+
+\node (i34) at (10,-5) {$\textsc{\small C}^-$};
+\node (ii34) at (11,-5) {$\textsc{\small C}^+$};
+\node (d34) at (10,-6) {};
+\node (dd34) at (11,-6) {};
+\draw[<-,>=stealth] (i34) -- (d34.center);
+\draw[->,>=stealth] (ii34) -- (dd34.center);
+\draw (d34.center) edge [-,>=stealth,bend right=90] (dd34.center);
+
+\end{tikzpicture}
+\]
+\caption{Growth rules}
+\label{fig:rules}
+\end{figure}
 
 This meta-grammar, given below, consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one (i.e. non-terminal $\s{W}$).
 \begin{figure}
@@ -194,7 +444,7 @@ In order to accommodate the interactions between this increased number of states
 
 As a solution to the aforementioned limitation, we propose a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of those interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
 
-Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors} as illustrated in Fig.\ref{fig:desc}.
+Formally, the system is initialized with a map $\mathcal{D}$, such as the one illustrated in Fig.\ref{fig:desc}. Its domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors} as illustrated in Fig.\ref{fig:desc}.
 
 \vspace{-10pt}
 \hspace{-16pt}
@@ -211,7 +461,7 @@ Formally, the system is initialized with a map $\mathcal{D}$, whose domain, $dom
 \s{C}^-_{r} &\mapsto (\epsilon, ab) \\
 \s{C}^-_{l, r} &\mapsto (a, b)
 \end{align*}
-\caption{Map $\mathcal{D}$}
+\caption{Map $\mathcal{D}$ for refined states}
 \label{fig:desc}
 \end{figure}
 \end{minipage}
@@ -254,7 +504,7 @@ Meta-grammars accelerated the process of creating grammars, by letting us simply
 
 \section{Tools \& Results}
 \subsection{Grammar Utilities}
-We have implemented the modelling techniques described in section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which provides the programmer with a \textit{domain-specific language} close to this paper's mathematical notation. To facilitate experimentation, our package includes features such as grammar selection, time measurements, word generation and soundness/completeness checking. The following example demonstrates the definition of $\mathcal{G}_1$:
+We have implemented the modelling techniques described in Section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which provides the programmer with a \textit{domain-specific language} close to this paper's mathematical notation. To facilitate experimentation, our package includes features such as grammar selection, time measurements, word generation and soundness/completeness checking. The following example demonstrates the definition of $\mathcal{G}_1$:
 
 \begin{center}
 \begin{minipage}{0.5\textwidth}
@@ -418,7 +668,7 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 \end{figure}
 
 \section{Road to Completeness}\label{sec4}
-To our knowledge, no other attempt has come so close to modelling $D^3$ with a 2-MCFG. We attribute this to the combination of a pragmatic approach with results from existing theoretical work. In this chapter, we present a collection of additional ideas, which we consider worthy of further exploration.
+To our knowledge, no other attempt has come so close to modelling $D^3$ with a 2-MCFG. We attribute this to the combination of a pragmatic approach with results from existing theoretical work. In this section, we present a collection of additional ideas, which we consider worthy of further exploration.
 
 \paragraph{\textbf{First-Match Policy and Relinking}}
 Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$, that would abide by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
@@ -460,6 +710,10 @@ An interesting question is whether promotion can be handled by a 2-MCFG (as a \t
 We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some novel techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tools to accommodate MIX-style languages and systems of meta-grammars in general.
 
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
+
+\section*{Acknowledgements}
+We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process.
+
 
 \bibliographystyle{splncs03}
 \bibliography{sources}
