@@ -1,5 +1,7 @@
 \documentclass[nonatbib,numbers,10pt]{llncs}
 
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage{fontspec}
 \setmainfont{Liberation Sans}
 \usepackage{subfigure}
@@ -71,6 +73,7 @@
 \newcommand{\Or}[4]{\Orderr{O}{#1}{#2}{#3}{#4}}
 \newcommand{\Orr}[4]{\Orderrr{O}{#1}{#2}{#3}{#4}}
 \newcommand{\Con}[4]{\Order{C}{#1}{#2}{#3}{#4}}
+\newcommand\ctr\centering
 
 \title{$D^3$ as a 2-MCFL}
 \author{}
@@ -93,7 +96,7 @@ Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^
 We use $D^3$ to refer to the Dyck language over the lexicographically ordered alphabet $a < b < c$, which generalizes well-bracketed parentheses over three symbols. Denoting with $\#x(w)$ the number of occurrences of symbol $x$ within word $w$, any word in $D^3$ satisfies the following conditions:
 \begin{itemize}
 \item[(D1)] $ \#a(w) = \#b(w) = \#c(w) $
-\item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall v \in prefixOf(w)$
+\item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall v \in \textit{PrefixOf}(w)$
 \end{itemize}
 
 Eliding the second condition (D2), we get the $MIX$ language, which represents free word order
@@ -107,26 +110,26 @@ Additionally, $MIX$ has already been proven expressible by a 2-MCFG\cite{salvati
 A standard Young Tableau is defined as an assortment of $n$ boxes into a ragged (or jagged, i.e. non-rectangular) matrix containing the integers $1$ through $n$ and arranged in such a way that the entries are strictly increasing over the rows (from left to right) and columns (from top to bottom). Reading off the entries of the boxes, one may obtain the \textit{Yamanouchi} word by placing (in order) each character's index to the row corresponding to its lexicographical ordering.
 
 In the case of $D^3$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times 3$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $3n$, where $n$ is the number of occurrences of each unique symbol\cite{moortgat}.
-Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableau of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example below:
+Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableau of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example tableau in Fig.\ref{fig:tableau}.
 \begin{figure}[h!]
 	\centering
 	\begin{tabular}{rl}
-%		\setlength{\tabcolsep}{10pt}
 		\begin{tabular}{r}
 		a: \\ b: \\ c:
 		\end{tabular}
 		&
-	    \begin{tabular}{| c | c | c | c | c | c |}
+      \begin{tabularx}{.4\linewidth}{ | Y | Y | Y | Y | Y | Y | }
+      \hline
+       1 & 3 & 4 & 8 & 9 & 10 \\
     		\hline
-	    1 & 3 & 4 & 8 & 9 & 10 \\
-    		\hline
-	    2 & 5 & 7 & 11 & 13 & 15 \\
+	     2 &  5 &  7 &  11 & 13 & 15 \\
 	    \hline
-	    6 & 12 & 14 & 16 & 17 & 18 \\
+	     6 &  12 &  14 &  16 & 17 & 18 \\
     		\hline
-	    \end{tabular}
+	    \end{tabularx}
 	\end{tabular}
   	\caption{Young tableau for \w{abaabcbaaabcbcbccc}}
+  	\label{fig:tableau}
 \end{figure}
 
 \paragraph{\textbf{Promotions and Orbits}}
@@ -154,11 +157,12 @@ A Dyck word can also be visualized as a constrained \textit{walk} within the fir
 \kappa\vec{v_a} + \lambda\vec{v_b} + \mu\vec{v_c} &\geq & \vec{0},  (\forall \kappa \geq \lambda \geq \mu)
 \end{eqnarray}
 
-We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk is depicted in Fig. \ref{fig:walk}.
+We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk is depicted in Fig.\ref{fig:walk}.
 
+\vspace{10pt}
 \begin{figure}[h!]
     \begin{center}
-   
+     \hspace{-2cm}
     \begin{tikzpicture}[
     	scale=1,
     	-->/.style={->,thick,shorten >=.666pt,shorten <=.666pt},
@@ -234,14 +238,16 @@ To set things off, we start with the grammar of \textit{triple insertion}. This 
 
 Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.\ref{fig:fmp} for an example.
 \subsection{Meta-Grammars}\label{subsec22}
-To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig. \ref{fig:meta-ins}.
+To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig.\ref{fig:meta-ins}.
 
 This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
 \[
 \mathcal{G}_1: \mathcal{G}_0 + \Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
 \]
 
-The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions. Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}.
+The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions.
+
+Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}. Fig.\ref{fig:rules} depicts the growth rules in the exact same web form as proposed by Petersen, modulo node branding. A subset of these web-reduction rules are, in fact, precisely modelled by the meta-grammar $\mathcal{G}_2$ presented in Fig.\ref{fig:g2}. In section \ref{sec4}, we briefly explains our inability to model the whole set of rules with a 2-MCFG, hence rendering our grammar complete.
 
 \begin{figure}[h!]
 \[
@@ -394,7 +400,7 @@ every node/.style={anchor=base},xscale=.725,yscale=1.1,
 \label{fig:rules}
 \end{figure}
 
-This meta-grammar, given below, consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one (i.e. non-terminal $\s{W}$).
+$\mathcal{G}_2$ consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one (i.e. non-terminal $\s{W}$).
 \begin{figure}
     \centering
     \begin{subfigure}{}
@@ -426,7 +432,7 @@ This meta-grammar, given below, consists of base cases for positive states, poss
 		\end{minipage}
    \end{subfigure}
     \caption{$\mathcal{G}_2$: Meta-grammar of incomplete states}%
-    \label{fig:example}
+    \label{fig:g2}
 \end{figure}
 
 A further extension can be achieved through universally quantifying the notion of triple insertion, which is unique in the sense that it can insert three different terminals, each at a different position:
