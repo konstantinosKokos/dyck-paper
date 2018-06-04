@@ -1,11 +1,10 @@
 \documentclass[nonatbib,numbers,10pt]{llncs}
 
 \usepackage{tabularx}
+\usepackage{subcaption}
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage{fontspec}
 \setmainfont{Liberation Sans}
-\usepackage{subfigure}
-
 
 % Geometry
 \usepackage{geometry}
@@ -34,6 +33,7 @@
 \colorlet{CodeBg}{gray!90}
 \usepackage{color, colortbl}
 \definecolor{Gray}{rgb}{0.9,0.9,0.9}
+\definecolor{White}{rgb}{1,1,1}
 \definecolor{bblue}{HTML}{1D577A}
 \definecolor{rred}{HTML}{C03425}
 \definecolor{ggreen}{HTML}{8BB523}
@@ -111,21 +111,20 @@ A standard Young Tableau is defined as an assortment of $n$ boxes into a ragged 
 
 In the case of $D^3$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times 3$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $3n$, where $n$ is the number of occurrences of each unique symbol\cite{moortgat}.
 Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableau of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example tableau in Fig.\ref{fig:tableau}.
-\begin{figure}[h!]
+\begin{figure}
 	\centering
 	\begin{tabular}{rl}
 		\begin{tabular}{r}
 		a: \\ b: \\ c:
 		\end{tabular}
 		&
-      \begin{tabularx}{.4\linewidth}{ | Y | Y | Y | Y | Y | Y | }
-      \hline
+      \begin{tabularx}{.4\linewidth}{YYYYYY}
+      \rowcolor{Gray}
        1 & 3 & 4 & 8 & 9 & 10 \\
-    		\hline
+       \rowcolor{White}
 	     2 &  5 &  7 &  11 & 13 & 15 \\
-	    \hline
+	    \rowcolor{Gray} 
 	     6 &  12 &  14 &  16 & 17 & 18 \\
-    		\hline
 	    \end{tabularx}
 	\end{tabular}
   	\caption{Young tableau for \w{abaabcbaaabcbcbccc}}
@@ -158,9 +157,8 @@ A Dyck word can also be visualized as a constrained \textit{walk} within the fir
 \end{eqnarray}
 
 We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk is depicted in Fig.\ref{fig:walk}.
-
-\vspace{10pt}
-\begin{figure}[h!]
+\\
+\begin{figure}
     \begin{center}
      \hspace{-2cm}
     \begin{tikzpicture}[
@@ -204,12 +202,11 @@ We can then picture Dyck words as routes starting from $(0,0)$. (1) means that e
 We now present a number of novel techniques that we developed as an attempt to solve the problem at hand, incrementally moving towards more complex and abstract grammars. For the purpose of experimentation we have implemented these techniques, based on a software library for parsing MCFGs\cite{ljunglof}. The resulting Python code is open-source and available online\footnote{\url{https://github.com/omelkonian/dyck}}.
 
 \subsection{Triple Insertion}
-To set things off, we start with the grammar of \textit{triple insertion}. This grammar operates on non-terminals $\s{W}(x,y)$, producing $\s{W}(x',y')$ with an additional triplet \textit{a, b, c} that respects the partial orders $x<y$ and $a<b<c$. The end-word is produced through the concatenation of $(x,y)$.
+To set things off, we start with the grammar of \textit{triple insertion} in Fig.\ref{fig:ins}. This grammar operates on non-terminals $\s{W}(x,y)$, producing $\s{W}(x',y')$ with an additional triplet \textit{a, b, c} that respects the partial orders $x<y$ and $a<b<c$. The end-word is produced through the concatenation of $(x,y)$.
 
 \begin{figure}
-  \begin{minipage}{0.45\textwidth}
-  	\centering
-    \begin{align}
+  \centering
+  \begin{align}
 	\setcounter{equation}{0}
 	\s{S}(xy) \leftarrow \s{W}(x,y)&. \\
 	\s{W}(\epsilon, xy\textbf{abc}) \leftarrow \s{W}(x,y)&. \\
@@ -221,24 +218,24 @@ To set things off, we start with the grammar of \textit{triple insertion}. This 
 	\setcounter{equation}{64}
 	\s{W}(\textbf{abc}, \epsilon)&.
 	\end{align}
-	\caption{Grammar of triple insertions}
-    \label{fig:1}
-  \end{minipage} \hspace{0.05\textwidth}
-  \begin{minipage}{0.55\textwidth}
-  	\centering
-  	\begin{align*}
-	&\s{S}(xy) \leftarrow \s{W}(x,y). \\
-	&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
-	&\Or{\s{W}}{\s{W}}{x < y,\ a < b < c}{2}
-	\end{align*}
-	\caption{$\mathcal{G}_0$: Meta-grammar of triple insertions}
-	\label{fig:meta-ins}
-  \end{minipage}
+  \caption{Grammar of triple insertions}  
+  \label{fig:ins}
 \end{figure}
 
 Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.\ref{fig:fmp} for an example.
 \subsection{Meta-Grammars}\label{subsec22}
 To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig.\ref{fig:meta-ins}.
+
+\begin{figure}
+  \centering
+  \begin{align*}
+	&\s{S}(xy) \leftarrow \s{W}(x,y). \\
+	&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
+	&\Or{\s{W}}{\s{W}}{x < y,\ a < b < c}{2}
+	\end{align*}
+  \caption{$\mathcal{G}_0$: Meta-grammar of triple insertions}  
+	\label{fig:meta-ins}
+\end{figure}
 
 This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
 \[
@@ -249,7 +246,7 @@ The addition of this rule gets us closer to completeness, but we are still not q
 
 Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}. Fig.\ref{fig:rules} depicts the growth rules in the exact same web form as proposed by Petersen, modulo node branding. A subset of these web-reduction rules are, in fact, precisely modelled by the meta-grammar $\mathcal{G}_2$ presented in Fig.\ref{fig:g2}. In section \ref{sec4}, we briefly explains our inability to model the whole set of rules with a 2-MCFG, hence rendering our grammar complete.
 
-\begin{figure}[h!]
+\begin{figure}
 \[
 \begin{tikzpicture}[
 every node/.style={anchor=base},xscale=.725,yscale=1.1,
@@ -389,8 +386,7 @@ every node/.style={anchor=base},xscale=.725,yscale=1.1,
 \node (i34) at (10,-5) {$\textsc{\small C}^-$};
 \node (ii34) at (11,-5) {$\textsc{\small C}^+$};
 \node (d34) at (10,-6) {};
-\node (dd34) at (11,-6) {};
-\draw[<-,>=stealth] (i34) -- (d34.center);
+\node (dd34) at (11,-6) {};\draw[<-,>=stealth] (i34) -- (d34.center);
 \draw[->,>=stealth] (ii34) -- (dd34.center);
 \draw (d34.center) edge [-,>=stealth,bend right=90] (dd34.center);
 
@@ -403,7 +399,6 @@ every node/.style={anchor=base},xscale=.725,yscale=1.1,
 $\mathcal{G}_2$ consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one (i.e. non-terminal $\s{W}$).
 \begin{figure}
     \centering
-    \begin{subfigure}{}
 		\begin{minipage}{.2\textwidth}
 		\begin{align*}
 		&\s{S}(xy) \leftarrow \s{W}(x,y). \\
@@ -415,9 +410,7 @@ $\mathcal{G}_2$ consists of base cases for positive states, possible state inter
 		&\Or{B^-}{A^+, C^+}{x < y < z < w}{2}
 		\end{align*}
 		\end{minipage}
-	\end{subfigure}%
-	~ ~ ~
-    \begin{subfigure}{}
+~ ~ ~ ~ ~ ~
 	    \begin{minipage}{.2\textwidth}
 		\begin{align*}
 		&\Or{A^-}{B^+, C^+}{x < y < z < w}{2} \\
@@ -430,7 +423,6 @@ $\mathcal{G}_2$ consists of base cases for positive states, possible state inter
 		&\quad\Or{\s{K}}{\s{K}, \s{W}}{x < y,\ z < w}{2}
 		\end{align*}
 		\end{minipage}
-   \end{subfigure}
     \caption{$\mathcal{G}_2$: Meta-grammar of incomplete states}%
     \label{fig:g2}
 \end{figure}
@@ -450,12 +442,9 @@ In order to accommodate the interactions between this increased number of states
 
 As a solution to the aforementioned limitation, we propose a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of those interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
 
-Formally, the system is initialized with a map $\mathcal{D}$, such as the one illustrated in Fig.\ref{fig:desc}. Its domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors} as illustrated in Fig.\ref{fig:desc}.
+Formally, the system is initialized with a map $\mathcal{D}$, such as the one illustrated in Fig.\ref{fig:desc}. Its domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors}.
 
-\vspace{-10pt}
-\hspace{-16pt}
-\begin{minipage}{.22\textwidth}
-\begin{figure}[H]
+\begin{figure}
 \begin{align*}
 \s{W} &\mapsto (\epsilon, \epsilon) \\
 \s{A}^+_{l} &\mapsto (a, \epsilon) \\
@@ -470,9 +459,7 @@ Formally, the system is initialized with a map $\mathcal{D}$, such as the one il
 \caption{Map $\mathcal{D}$ for refined states}
 \label{fig:desc}
 \end{figure}
-\end{minipage}
-\hspace{0.08\textwidth}
-\begin{minipage}{.68\textwidth}
+
 \begin{algorithm}[H]
 \caption{ARIS: Automatic Rule Inference System}\label{euclid}
 \begin{algorithmic}
@@ -503,9 +490,7 @@ Formally, the system is initialized with a map $\mathcal{D}$, such as the one il
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-\end{minipage}
 
-\vspace{10pt}
 Meta-grammars accelerated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. ARIS builds upon this notion to raise the level of abstraction even further; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
 
 \section{Tools \& Results}
@@ -526,21 +511,18 @@ G_1 = Grammar([
 \end{minipage}
 \end{center}
 
-
 \subsection{Visualization}
 As counter-examples began to grow in size and number, we realised the necessity of a visualization tool to assist us in identifying properties they may exhibit. To that end, we distribute another Python package, called \textbf{dyckviz}, which allows the simultaneous visualization of tableau-promotion and web-rotation (grouped in their corresponding equivalence classes). An example of a web as rendered by our tool is given in Fig.\ref{fig:web}.
 
 Young tableaux in an orbit are colour-grouped by their column indices, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the corresponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated. 
 
-
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.75\textwidth]{web.pdf}
+\includegraphics[width=\textwidth]{web.pdf}
 \caption{Spider web of \w{abaacbbacbabaccbcc}}
 \label{fig:web}
 \end{center}
 \end{figure}
-
 
 \subsection{Grammar Comparisons}
 We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion)\cite{moortgat}.
@@ -585,7 +567,7 @@ We display three charts, depicting the number of rules, percentage of counter-ex
     \end{axis}
 \end{tikzpicture}
 % Computation Time
-\hspace{0.07\textwidth}
+~ ~ ~ ~ ~ ~ ~
 \begin{tikzpicture}
     \begin{axis}[
         width  = 0.55*\textwidth,
@@ -725,3 +707,4 @@ We would like to thank Dr. Michael Moortgat for introducing us to the problem, p
 \bibliography{sources}
 
 \end{document}
+
