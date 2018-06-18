@@ -98,11 +98,22 @@ We use $D^3$ to refer to the Dyck language over the lexicographically ordered al
 \item[(D1)] $ \#a(w) = \#b(w) = \#c(w) $
 \item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall v \in \textit{PrefixOf}(w)$
 \end{itemize}
+Eliding the second condition (D2), we get the $MIX$ language, which represents free word order over the same alphabet.
 
-Eliding the second condition (D2), we get the $MIX$ language, which represents free word order
-over the same alphabet\cite{kanazawa}. The extreme degree of 'scrambling' permitted in a language is considered linguistically irrelevant\cite{joshi}.
+\subsection{Motivation}
 
-$D^3$, on the other hand, enforces structural constraints, bringing it closer to natural languages.
+\paragraph{\textbf{Static Analysis}}
+Interestingly, the 2-symbol Dyck language is used in the \textit{static analysis} of programming languages, where a large number of analyses are formulated as \textit{language-reachability} problems\cite{reps}.
+
+For instance, when considering interprocedural calls as part of the source language, high precision can only be achieved by examining only control-flow paths that respect the fact that a procedure call always returns to the site of its current caller\cite{reps2}. By associating the program point \textit{before} a procedure call $f_k$ with $(_k$, and the one \textit{after} the call with $)_k$, the validity problem is reduced to recognizing $D^2$ words. 
+
+Alas, the 2-dimensional case does not accommodate richer control-flow structures, such as exception handling via \texttt{try/catch} and Python generators via the \texttt{yield} keyword. To achieve this, one must lift the Dyck-reachability problem to a higher dimension which, given the computational cost that context-sensitive parsing induces, is currently prohibited. If $D^3$ is indeed an 2-MCFL, parsing it would become computationally attainable for these purposes and eventually allow scalable analysis for non-standard control-flow mechanisms by exploiting the specific structure of analysed programs, as has been recently done in the 2-dimensional case\cite{andreas}.
+
+Last but not least, future research directions will open up in a multitude of analyses that are currently restrained to two dimensions, such as \textit{program slicing}, \textit{flow-insensitive points-to analysis} and \textit{shape approximation}\cite{reps}.
+
+\paragraph{\textbf{Linguistics}}
+The extreme degree of 'scrambling' permitted by $MIX$ is considered linguistically irrelevant\cite{kanazawa}.
+On the other hand, $D^3$ enforces structural constraints, bringing it closer to natural languages.
 Additionally, $MIX$ has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
 
 \subsection{Correspondences}
@@ -142,7 +153,7 @@ There is an interesting transformation on Young Tableaux, namely the \textit{Jeu
 \item[(3)] Replace the empty box with $3n$.
 \end{enumerate}
 
-The tableau obtained through Jeu-de-taquin on T is called its promotion $p(T)$. We denote by $p^k(T)$, $k$ successive applications of Jeu-de-taquin. It has been proven that $p^{3n}(T)=T$\cite{haiman}. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^3$ into disjoint sets, i.e. every word $w$ belongs to a particular orbit, obtained by promotions of $T_w$.
+The tableau obtained through Jeu-de-taquin on T is called its promotion $p(T)$. We denote by $p^k(T)$, $k$ successive applications of Jeu-de-taquin. It has been proven that $p^{3n}(T)=T$\cite{petersen}. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^3$ into disjoint sets, i.e. every word $w$ belongs to a particular orbit, obtained by promotions of $T_w$.
 
 \paragraph{\textbf{$\mathbf{A_2}$ Combinatorial Spider Webs}}
 The $A_2$ \textit{irreducible combinatorial spider web} is a directed planar graph embedded in a disk that satisfies certain conditions \cite{kuperberg}. Spider webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}\cite{petersen}. These operate on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. Growth rules will be examined from a grammatical perspective in Section \ref{subsec22}. Upon reaching a fixpoint, the growth process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word\cite{moortgat,petersen}.
@@ -249,7 +260,7 @@ Interestingly, there is a direct correspondence between these non-terminals and 
 \begin{figure}
 \[
 \begin{tikzpicture}[
-every node/.style={anchor=base},xscale=.725,yscale=1.1,
+every node/.style={anchor=base},xscale=.725,yscale=1,
 -->/.style={->,shorten >=2pt,shorten <=2pt,>=stealth},
 <--/.style={<-,shorten >=2pt,shorten <=2pt,>=stealth},
 --->/.style={->,shorten >=1pt,shorten <=1pt,>=stealth},
@@ -449,10 +460,7 @@ Formally, the system is initialized with a map $\mathcal{D}$, such as the one il
 \s{W} &\mapsto (\epsilon, \epsilon) \\
 \s{A}^+_{l} &\mapsto (a, \epsilon) \\
 \s{A}^+_{r} &\mapsto (\epsilon, a) \\
-\s{B}^+_{l} &\mapsto (b, \epsilon)\\
-&... \\
-\s{B}^-_{l, r} &\mapsto (a, c) \\
-\s{C}^-_{l} &\mapsto (ab, \epsilon) \\
+&\quad \vdots \\
 \s{C}^-_{r} &\mapsto (\epsilon, ab) \\
 \s{C}^-_{l, r} &\mapsto (a, b)
 \end{align*}
@@ -518,7 +526,7 @@ Young tableaux in an orbit are colour-grouped by their column indices, which she
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=\textwidth]{web.pdf}
+\includegraphics[width=.75\textwidth]{web.pdf}
 \caption{Spider web of \w{abaacbbacbabaccbcc}}
 \label{fig:web}
 \end{center}
@@ -662,7 +670,7 @@ To our knowledge, no other attempt has come so close to modelling $D^3$ with a 2
 Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$, that would abide by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
 
 However, if rules existed that would allow for match-making and breaking, i.e. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together.
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}[every node/.style={anchor=base},xscale=.25,yscale=.4]
 \node (n0) at (0,0) {$a$};
@@ -700,8 +708,7 @@ We tried to accurately present the intricacies of $D^3$ and the difficulties tha
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
 
 \section*{Acknowledgements}
-We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process.
-
+We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process, as well as Dr. Jurriaan Hage for suggesting the multi-dimensional use of the Dyck language in static analysis.
 
 \bibliographystyle{splncs03}
 \bibliography{sources}
