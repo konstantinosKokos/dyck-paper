@@ -99,6 +99,7 @@ We use $D^3$ to refer to the Dyck language over the lexicographically ordered al
 \item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall v \in \textit{PrefixOf}(w)$
 \end{itemize}
 Eliding the second condition (D2), we get the $MIX$ language, which represents free word order over the same alphabet.
+$MIX$ has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}.
 
 \subsection{Motivation}
 
@@ -107,14 +108,14 @@ Interestingly, the 2-symbol Dyck language is used in the \textit{static analysis
 
 For instance, when considering interprocedural calls as part of the source language, high precision can only be achieved by examining only control-flow paths that respect the fact that a procedure call always returns to the site of its current caller\cite{reps2}. By associating the program point \textit{before} a procedure call $f_k$ with $(_k$, and the one \textit{after} the call with $)_k$, the validity problem is reduced to recognizing $D^2$ words. 
 
-Alas, the 2-dimensional case does not accommodate richer control-flow structures, such as exception handling via \texttt{try/catch} and Python generators via the \texttt{yield} keyword. To achieve this, one must lift the Dyck-reachability problem to a higher dimension which, given the computational cost that context-sensitive parsing induces, is currently prohibited. If $D^3$ is indeed an 2-MCFL, parsing it would become computationally attainable for these purposes and eventually allow scalable analysis for non-standard control-flow mechanisms by exploiting the specific structure of analysed programs, as has been recently done in the 2-dimensional case\cite{andreas}.
+Alas, the 2-dimensional case cannot accommodate richer control-flow structures, such as exception handling via \texttt{try/catch} and Python generators via the \texttt{yield} keyword. To achieve this, one must lift the Dyck-reachability problem to a higher dimension which, given the computational cost that context-sensitive parsing induces, is currently prohibited. If $D^3$ is indeed a 2-MCFL, parsing it would become computationally attainable for these purposes and eventually allow scalable analysis for non-standard control-flow mechanisms by exploiting the specific structure of analysed programs, as has been recently done in the 2-dimensional case\cite{andreas}.
 
 Last but not least, future research directions will open up in a multitude of analyses that are currently restrained to two dimensions, such as \textit{program slicing}, \textit{flow-insensitive points-to analysis} and \textit{shape approximation}\cite{reps}.
 
 \paragraph{\textbf{Linguistics}}
 The extreme degree of 'scrambling' permitted by $MIX$ is considered linguistically irrelevant\cite{kanazawa}.
 On the other hand, $D^3$ enforces structural constraints, bringing it closer to natural languages.
-Additionally, $MIX$ has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}. Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
+Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
 
 \subsection{Correspondences}
 \paragraph{\textbf{Young Tableaux}}
@@ -708,7 +709,7 @@ We tried to accurately present the intricacies of $D^3$ and the difficulties tha
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
 
 \section*{Acknowledgements}
-We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process, as well as Dr. Jurriaan Hage for suggesting the multi-dimensional use of the Dyck language in static analysis.
+We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process, as well as Dr. Jurriaan Hage for suggesting the use of multi-dimensional Dyck languages in static analysis.
 
 \bibliographystyle{splncs03}
 \bibliography{sources}
