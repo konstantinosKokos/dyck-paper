@@ -1,33 +1,19 @@
-\documentclass[nonatbib,numbers,10pt]{llncs}
+\documentclass{llncs}
 
 \usepackage{tabularx}
-\usepackage{subcaption}
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
-\usepackage{fontspec}
-\setmainfont{Liberation Sans}
 
-% Geometry
-\usepackage{geometry}
-\geometry{
-	a4paper,
-	total={170mm,257mm},
-	top=4.5cm,
-	right=4cm,
-	bottom=6.5cm,
-	left=5cm,
-}
-
-\usepackage{epigraph}
 % Math
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
+
 % Code listing
 \usepackage{minted}
-%\usemintedstyle{friendly}
 \usemintedstyle{tango}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+
 % Colors
 \usepackage{xcolor, color, colortbl}
 \colorlet{CodeBg}{gray!90}
@@ -40,24 +26,27 @@
 \definecolor{ppurple}{HTML}{6B1B7F}
 \definecolor{pblack}{HTML}{000000}
 \definecolor{pyellow}{HTML}{C0B225}
+
 % Links
 \usepackage{hyperref}
 \definecolor{linkcolour}{rgb}{0,0.2,0.6}
 \hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour,citecolor=linkcolour}
+
 % Graphs
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \usetikzlibrary{trees}
 \usetikzlibrary{positioning}
 \usepackage{pgfplots}
+
 % Graphics
 \usepackage{graphics}
-\graphicspath{{figures/}} % Location of the graphics files
+\graphicspath{{img/}} % Location of the graphics files
 
+% Macros
 \newcommand\todo[1]{\textcolor{red}{#1}}
 \newcommand{\w}[1]{\textit{"#1"}}
 \newcommand\s{\textsc}
-
 \newcommand{\Order}[5]{
 	\[
 	\mathcal{#1}_{#5}\llbracket #2 \leftarrow #3 \mid \{ #4 \} \rrbracket.
@@ -76,18 +65,20 @@
 \newcommand\ctr\centering
 
 \title{$D^3$ as a 2-MCFL}
-\author{}
-\institute{}
 
 \begin{document}
+\author{Konstantinos Kogkalidis \and Orestis Melkonian}
+\institute{
+  University of Utrecht, The Netherlands \\
+  \email{\{k.kogkalidis,o.melkonian\}@uu.nl}
+}
+
 \maketitle
-
 \begin{abstract}
-We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, using a 2-Multiple Context-Free Grammar. We tackle this problem by implementing a number of novel techniques and present the associated software packages we developed.
+We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, using a 2-Multiple Context-Free Grammar. We tackle this problem by implementing a number of novel meta-grammatical techniques and present the associated software packages we developed.
+
+\keywords{Dyck Language; Multiple context-free grammars (MCFG)}
 \end{abstract}
-
-\keywords{Dyck Language; multiple context free grammars (MCFG)}
-
 
 \section{Introduction}\label{sec1}
 Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this section only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
@@ -711,8 +702,61 @@ Despite our best efforts, the question of whether $D^3$ can actually be encapsul
 \section*{Acknowledgements}
 We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process, as well as Dr. Jurriaan Hage for suggesting the use of multi-dimensional Dyck languages in static analysis.
 
-\bibliographystyle{splncs03}
-\bibliography{sources}
+% Bibliography
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{andreas}
+Chatterjee, K., Choudhary, B., Pavlogiannis, A.: Optimal dyck reachability for
+  data-dependence and alias analysis. Proceedings of the ACM on Programming
+  Languages  \textbf{2}(POPL), ~30 (2017)
+
+\bibitem{gotzmann}
+G{\"o}tzmann, D.N.: Multiple context-free grammars
+
+\bibitem{kanazawa}
+Kanazawa, M., Salvati, S.: Mix is not a tree-adjoining language. In:
+  Proceedings of the 50th Annual Meeting of the Association for Computational
+  Linguistics: Long Papers-Volume 1. pp. 666--674. Association for
+  Computational Linguistics (2012)
+
+\bibitem{kuperberg}
+Kuperberg, G.: Spiders for rank 2 lie algebras. Communications in mathematical
+  physics  \textbf{180}(1),  109--151 (1996)
+
+\bibitem{ljunglof}
+Ljungl{\"o}f, P.: Practical parsing of parallel multiple context-free grammars.
+  In: Workshop on Tree Adjoining Grammars and Related Formalisms. p.~144 (2012)
+
+\bibitem{moortgat}
+Moortgat, M.: A note on multidimensional dyck languages. In: Categories and
+  Types in Logic, Language, and Physics. pp. 279--296 (2014)
+
+\bibitem{petersen}
+Petersen, T.K., Pylyavskyy, P., Rhoades, B.: Promotion and cyclic sieving via
+  webs. Journal of Algebraic Combinatorics  \textbf{30}(1),  19--41 (2009)
+
+\bibitem{reps2}
+Reps, T., Horwitz, S., Sagiv, M.: Precise interprocedural dataflow analysis via
+  graph reachability. pp. 49--61. ACM (1995)
+
+\bibitem{reps}
+Reps, T.W.: Program analysis via graph reachability. In: Logic Programming,
+  Proceedings of the 1997 International Symposium, Port Jefferson, Long Island,
+  NY, USA, October 13-16, 1997. pp. 5--19 (1997)
+
+\bibitem{salvati}
+Salvati, S.: Mix is a 2-mcfl and the word problem in $z^2$ is solved by a
+  third-order collapsible pushdown automaton. Journal of Computer and System
+  Sciences  \textbf{81}(7),  1252--1277 (2015)
+
+\bibitem{vanwijn}
+van Wijngaarden, A.: The generative power of two-level grammars. In: ICALP
+  (1974)
+
+\end{thebibliography}
 
 \end{document}
 
