@@ -81,7 +81,9 @@ We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, us
 \end{abstract}
 
 \section{Introduction}\label{sec1}
-Our goal with this paper is the analysis of the 3-dimensional Dyck language, $D^3$, under the scope of a 2-multiple context-free language, 2-MCFL. For brevity's sake, this section only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
+Multidimensional Dyck languages\cite{moortgat} generalize the well-known pattern of well-bracketed pairs of parentheses to k-symbol alphabets. Our goal in this paper is to study the 3-dimensional Dyck language $D^3$, and the question of whether this is a 2-dimensional multiple context-free language, 2-MCFL.
+
+For brevity's sake, this section only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
 
 \subsection{Preliminaries}
 We use $D^3$ to refer to the Dyck language over the lexicographically ordered alphabet $a < b < c$, which generalizes well-bracketed parentheses over three symbols. Denoting with $\#x(w)$ the number of occurrences of symbol $x$ within word $w$, any word in $D^3$ satisfies the following conditions:
@@ -104,9 +106,9 @@ Alas, the 2-dimensional case cannot accommodate richer control-flow structures, 
 Last but not least, future research directions will open up in a multitude of analyses that are currently restrained to two dimensions, such as \textit{program slicing}, \textit{flow-insensitive points-to analysis} and \textit{shape approximation}\cite{reps}.
 
 \paragraph{\textbf{Linguistics}}
-The extreme degree of 'scrambling' permitted by $MIX$ is considered linguistically irrelevant\cite{kanazawa}.
-On the other hand, $D^3$ enforces structural constraints, bringing it closer to natural languages.
-Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
+For the characterization of natural language grammars, the extreme degree of ’scrambling’ permitted by the $MIX$ language may be considered overly expressive\cite{kanazawa}.
+
+On the other hand, the prefix condition of $D^3$ is more suggestive of free word order still respecting certain linear order constraints, as found in natural languages. Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
 
 \subsection{Correspondences}
 \paragraph{\textbf{Young Tableaux}}
@@ -148,7 +150,7 @@ There is an interesting transformation on Young Tableaux, namely the \textit{Jeu
 The tableau obtained through Jeu-de-taquin on T is called its promotion $p(T)$. We denote by $p^k(T)$, $k$ successive applications of Jeu-de-taquin. It has been proven that $p^{3n}(T)=T$\cite{petersen}. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^3$ into disjoint sets, i.e. every word $w$ belongs to a particular orbit, obtained by promotions of $T_w$.
 
 \paragraph{\textbf{$\mathbf{A_2}$ Combinatorial Spider Webs}}
-The $A_2$ \textit{irreducible combinatorial spider web} is a directed planar graph embedded in a disk that satisfies certain conditions \cite{kuperberg}. Spider webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}\cite{petersen}. These operate on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. Growth rules will be examined from a grammatical perspective in Section \ref{subsec22}. Upon reaching a fixpoint, the growth process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word\cite{moortgat,petersen}.
+The $A_2$ \textit{irreducible combinatorial spider web} is a directed planar graph embedded in a disk that satisfies certain conditions\cite{kuperberg}. Spider webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}\cite{petersen}. These operate on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. Growth rules will be examined from a grammatical perspective in Section \ref{subsec22}. Upon reaching a fixpoint, the growth process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word\cite{moortgat,petersen}.
 
 A bijection also links Young Tableaux with Spider Webs. More specifically, the act of promotion is isomorphic to a combinatorial action on spider webs, namely \textit{web rotation}\cite{petersen}.
 
@@ -240,14 +242,14 @@ To address the issue of rule size, we introduce the notion of \textit{meta-gramm
 	\label{fig:meta-ins}
 \end{figure}
 
-This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
+This approach enhances the potential expressivity of our grammars as well. For instance, we can now extend the previous grammar with a single meta-rule that allows two non-terminals $\s{W}(x,y)$, $\s{W}(z,w)$ to interleave with one another, producing rearranged tuple concatenations and allowing some degree of straddling to be generated:
 \[
 \mathcal{G}_1: \mathcal{G}_0 + \Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
 \]
 
 The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions.
 
-Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}. Fig.\ref{fig:rules} depicts the growth rules in the exact same web form as proposed by Petersen, modulo node branding. A subset of these web-reduction rules are, in fact, precisely modelled by the meta-grammar $\mathcal{G}_2$ presented in Fig.\ref{fig:g2}. In section \ref{sec4}, we briefly explains our inability to model the whole set of rules with a 2-MCFG, hence rendering our grammar complete.
+Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}. Fig.\ref{fig:rules} depicts the growth rules in the exact same web form as proposed by Petersen, modulo node branding. A subset of these web-reduction rules are, in fact, precisely modelled by the meta-grammar $\mathcal{G}_2$ presented in Fig.\ref{fig:g2}. In section \ref{sec4}, we briefly explain our inability to model the whole set of rules with a 2-MCFG, hence rendering our grammar complete.
 
 \begin{figure}
 \[
@@ -525,7 +527,7 @@ Young tableaux in an orbit are colour-grouped by their column indices, which she
 \end{figure}
 
 \subsection{Grammar Comparisons}
-We display three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion)\cite{moortgat}.
+Fig.\ref{fig:charts} displays three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion\footnote{\url{https://oeis.org/A000108}}).
 \begin{figure}[h]
 % Rule size
 \begin{tikzpicture}
@@ -653,6 +655,7 @@ We display three charts, depicting the number of rules, percentage of counter-ex
 \end{tikzpicture}
 \end{center}
 \caption{Performance measures}
+\label{fig:charts}
 \end{figure}
 
 \section{Road to Completeness}\label{sec4}
@@ -695,9 +698,9 @@ Although $\mathcal{G}_2$ comes close to realizing the growth algorithm, not all 
 An interesting question is whether promotion can be handled by a 2-MCFG (as a \textit{context-free rewriting system}). If so, it could be worth looking into the properties of orbits, to test for instance if there are promotions within an orbit that can be easier to solve than others. Solving a single promotion and transducing the solution to all equivalent words could then be a guideline towards completeness. 
 
 \section{Conclusion}
-We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it under the scope of a 2-MCFL. We have developed and introduced some novel techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tools to accommodate MIX-style languages and systems of meta-grammars in general.
+We tried to accurately present the intricacies of $D^3$ and the difficulties that arise when attempting to model it as a 2-MCFL. We have developed and introduced some novel techniques and tools, which we believe can be of use even outside the problem's narrow domain. We have largely expanded on the existing tools to accommodate MIX-style languages and systems of meta-grammars in general.
 
-Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on his/her own.
+Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on her own.
 
 \section*{Acknowledgements}
 We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process, as well as Dr. Jurriaan Hage for suggesting the use of multi-dimensional Dyck languages in static analysis.
