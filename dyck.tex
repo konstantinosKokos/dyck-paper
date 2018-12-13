@@ -10,7 +10,16 @@
 
 % Code listing
 \usepackage{minted}
-\usemintedstyle{tango}
+\setminted[python]{
+  fontsize=\footnotesize,
+  baselinestretch=1.1,
+  frame=lines,
+  framesep=0.3cm
+}
+\usemintedstyle{friendly}
+\usepackage{fontspec}
+\setmonofont{FiraCode-Regular}
+
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
@@ -67,11 +76,11 @@
 \title{$D^3$ as a 2-MCFL}
 
 \begin{document}
-\author{Konstantinos Kogkalidis \and Orestis Melkonian}
-\institute{
-  University of Utrecht, The Netherlands \\
-  \email{\{k.kogkalidis,o.melkonian\}@uu.nl}
-}
+%\author{Konstantinos Kogkalidis \and Orestis Melkonian}
+%\institute{
+%  University of Utrecht, The Netherlands \\
+%  \email{\{k.kogkalidis,o.melkonian\}@uu.nl}
+%}
 
 \maketitle
 \begin{abstract}
@@ -81,41 +90,41 @@ We discuss the open problem of parsing the Dyck language of 3 symbols, $D^3$, us
 \end{abstract}
 
 \section{Introduction}\label{sec1}
-Multidimensional Dyck languages\cite{moortgat} generalize the well-known pattern of well-bracketed pairs of parentheses to k-symbol alphabets. Our goal in this paper is to study the 3-dimensional Dyck language $D^3$, and the question of whether this is a 2-dimensional multiple context-free language, 2-MCFL.
+Multidimensional Dyck languages~\cite{moortgat} generalize the well-known pattern of well-bracketed pairs of parentheses to k-symbol alphabets. Our goal in this paper is to study the 3-dimensional Dyck language $D^3$, and the question of whether this is a 2-dimensional multiple context-free language, 2-MCFL.
 
 For brevity's sake, this section only serves as a brief introductory guide towards relevant papers, where the interested reader will find definitions, properties and various correspondences of the problem. 
 
 \subsection{Preliminaries}
-We use $D^3$ to refer to the Dyck language over the lexicographically ordered alphabet $a < b < c$, which generalizes well-bracketed parentheses over three symbols. Denoting with $\#x(w)$ the number of occurrences of symbol $x$ within word $w$, any word in $D^3$ satisfies the following conditions:
+We use $D^3$ to refer to the Dyck language over the lexicographically ordered alphabet $a < b < c$, which generalizes well-bracketed parentheses over three symbols. Denoting with $\#x(w)$ the number of occurrences of symbol $x$ within word $w$, a word belongs in $D^3$ if and only if it satisfies the following conditions:
 \begin{itemize}
 \item[(D1)] $ \#a(w) = \#b(w) = \#c(w) $
-\item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall v \in \textit{PrefixOf}(w)$
+\item[(D2)] $ \#a(v) \geq \#b(v) \geq \#c(v),\ \forall \ v \in \textit{PrefixOf}(w)$
 \end{itemize}
-Eliding the second condition (D2), we get the $MIX$ language, which represents free word order over the same alphabet.
-$MIX$ has already been proven expressible by a 2-MCFG\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings\cite{gotzmann}.
+Eliding the second condition (D2), we get the $MIX$ language, which models free word order over the same alphabet.
+$MIX$ has already been proven expressible by a 2-MCFG~\cite{salvati}; the class of multiple context-free grammars that operate on pairs of strings~\cite{gotzmann}.
 
 \subsection{Motivation}
 
 \paragraph{\textbf{Static Analysis}}
-Interestingly, the 2-symbol Dyck language is used in the \textit{static analysis} of programming languages, where a large number of analyses are formulated as \textit{language-reachability} problems\cite{reps}.
+Interestingly, the 2-symbol Dyck language ($D^2$) is used in the \textit{static analysis} of programming languages, where a large number of analyses are formulated as \textit{language-reachability} problems~-\cite{reps}.
 
-For instance, when considering interprocedural calls as part of the source language, high precision can only be achieved by examining only control-flow paths that respect the fact that a procedure call always returns to the site of its current caller\cite{reps2}. By associating the program point \textit{before} a procedure call $f_k$ with $(_k$, and the one \textit{after} the call with $)_k$, the validity problem is reduced to recognizing $D^2$ words. 
+For instance, when considering interprocedural calls as part of the source language, high precision can only be achieved by examining only control-flow paths that respect the fact that a procedure call always returns to the site of its current caller~\cite{reps2}. By associating the program point \textit{before} a procedure call $f_k$ with $(_k$, and the one \textit{after} the call with $)_k$, the validity problem is reduced to recognizing $D^2$ words. 
 
-Alas, the 2-dimensional case cannot accommodate richer control-flow structures, such as exception handling via \texttt{try/catch} and Python generators via the \texttt{yield} keyword. To achieve this, one must lift the Dyck-reachability problem to a higher dimension which, given the computational cost that context-sensitive parsing induces, is currently prohibited. If $D^3$ is indeed a 2-MCFL, parsing it would become computationally attainable for these purposes and eventually allow scalable analysis for non-standard control-flow mechanisms by exploiting the specific structure of analysed programs, as has been recently done in the 2-dimensional case\cite{andreas}.
+Alas, the 2-dimensional case cannot accommodate richer control-flow structures, such as exception handling via \texttt{try/catch} and Python generators via the \texttt{yield} keyword. To achieve this, one must lift the Dyck-reachability problem to a higher dimension which, given the computational cost that context-sensitive parsing induces, is currently prohibited. If $D^3$ is indeed a 2-MCFL, parsing it would become computationally attainable for these purposes and eventually allow scalable analysis for non-standard control-flow mechanisms by exploiting the specific structure of analysed programs, as has been recently done in the 2-dimensional case~\cite{andreas}.
 
-Last but not least, future research directions will open up in a multitude of analyses that are currently restrained to two dimensions, such as \textit{program slicing}, \textit{flow-insensitive points-to analysis} and \textit{shape approximation}\cite{reps}.
+Last but not least, future research directions will open up in a multitude of analyses that are currently restrained to two dimensions, such as \textit{program slicing}, \textit{flow-insensitive points-to analysis} and \textit{shape approximation}~\cite{reps}.
 
 \paragraph{\textbf{Linguistics}}
-For the characterization of natural language grammars, the extreme degree of ’scrambling’ permitted by the $MIX$ language may be considered overly expressive\cite{kanazawa}.
+For the characterization of natural language grammars, the extreme degree of ’scrambling’ permitted by the $MIX$ language may be considered overly expressive~\cite{kanazawa}.
 
-On the other hand, the prefix condition of $D^3$ is more suggestive of free word order still respecting certain linear order constraints, as found in natural languages. Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
+On the other hand, the prefix condition of $D^3$ allows for partial word movement, while still respecting certain linear order constraints, as observed in natural languages. Hence, it is reasonable to examine whether $D^3$ can also be modelled by a 2-MCFG. Such an endeavour proved quite challenging, necessitating careful study of correspondences with other mathematical constructs.
 
 \subsection{Correspondences}
 \paragraph{\textbf{Young Tableaux}}
 A standard Young Tableau is defined as an assortment of $n$ boxes into a ragged (or jagged, i.e. non-rectangular) matrix containing the integers $1$ through $n$ and arranged in such a way that the entries are strictly increasing over the rows (from left to right) and columns (from top to bottom). Reading off the entries of the boxes, one may obtain the \textit{Yamanouchi} word by placing (in order) each character's index to the row corresponding to its lexicographical ordering.
 
-In the case of $D^3$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times 3$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $3n$, where $n$ is the number of occurrences of each unique symbol\cite{moortgat}.
-Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableau of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example tableau in Fig.\ref{fig:tableau}.
+In the case of $D^3$, the Tableau associated with these words is in fact \textit{rectangular} of size $n \times 3$, and the length of the corresponding word (called a \textit{balanced or dominant Yamanouchi word} in this context) is $3n$, where $n$ is the number of occurrences of each unique symbol~\cite{moortgat}.
+Practically, the rectangular shape ensures constraint (D1), while the ascending order of elements over rows and columns ensures constraint (D2). In that sense, a rectangular standard Young tableau of size $n \times 3$ is, as a construct, an alternative way of uniquely representing the different words of $D^3$. We present an example tableau in Fig.~\ref{fig:tableau}.
 \begin{figure}
 	\centering
 	\begin{tabular}{rl}
@@ -147,21 +156,21 @@ There is an interesting transformation on Young Tableaux, namely the \textit{Jeu
 \item[(3)] Replace the empty box with $3n$.
 \end{enumerate}
 
-The tableau obtained through Jeu-de-taquin on T is called its promotion $p(T)$. We denote by $p^k(T)$, $k$ successive applications of Jeu-de-taquin. It has been proven that $p^{3n}(T)=T$\cite{petersen}. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^3$ into disjoint sets, i.e. every word $w$ belongs to a particular orbit, obtained by promotions of $T_w$.
+The tableau obtained through Jeu-de-taquin on T is called its promotion $p(T)$. We denote by $p^k(T)$, $k$ successive applications of Jeu-de-taquin. It has been proven that $p^{3n}(T)=T$~\cite{petersen}. In other words, the promotion defines an equivalence class, which we name an \textit{orbit}, which cycles back to itself. Orbits dissect the space of $D^3$ into disjoint sets, i.e. every word $w$ belongs to a particular orbit, obtained by promotions of $T_w$.
 
 \paragraph{\textbf{$\mathbf{A_2}$ Combinatorial Spider Webs}}
-The $A_2$ \textit{irreducible combinatorial spider web} is a directed planar graph embedded in a disk that satisfies certain conditions\cite{kuperberg}. Spider webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}\cite{petersen}. These operate on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. Growth rules will be examined from a grammatical perspective in Section \ref{subsec22}. Upon reaching a fixpoint, the growth process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word\cite{moortgat,petersen}.
+The $A_2$ \textit{irreducible combinatorial spider web} is a directed planar graph embedded in a disk that satisfies certain conditions; we refer the reader to \cite{kuperberg} for a formal definition. Spider webs can be obtained through the application of a set of rules, known as the \textit{Growth Algorithm}~\cite{petersen}. These operate on pairs of neighbouring nodes, collapsing them into a singular intermediate node, transforming them into a new pair or eliminating them altogether. Growth rules will be examined from a grammatical perspective in Section~\ref{subsec22}. Upon reaching a fixpoint, the growth process produces a well-formed Spider Web, which, in the context of $D^3$, can be interpreted as a visual representation of parsing a word~\cite{moortgat,petersen}.
 
-A bijection also links Young Tableaux with Spider Webs. More specifically, the act of promotion is isomorphic to a combinatorial action on spider webs, namely \textit{web rotation}\cite{petersen}.
+A bijection also links Young Tableaux with Spider Webs. More specifically, the act of promotion is isomorphic to a combinatorial action on spider webs, namely \textit{web rotation}~\cite{petersen}.
 
 \paragraph{\textbf{Constrained Walk}}
 A Dyck word can also be visualized as a constrained \textit{walk} within the first quadrant of $\mathbb{Z}^2$. We can assign each alphabet symbol $x$ a vector value $\vec{v_x} \in \mathbb{Z}^2$ such that all pairs of $(\vec{v_x},\ \vec{v_y})$ are linearly independent and:
 \begin{eqnarray}
 \vec{v_a} + \vec{v_b} + \vec{v_c} &=& \vec{0} \\
-\kappa\vec{v_a} + \lambda\vec{v_b} + \mu\vec{v_c} &\geq & \vec{0},  (\forall \kappa \geq \lambda \geq \mu)
+\kappa\vec{v_a} + \lambda\vec{v_b} + \mu\vec{v_c} &\geq & \vec{0},  (\forall \ \kappa \geq \lambda \geq \mu)
 \end{eqnarray}
 
-We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk is depicted in Fig.\ref{fig:walk}.
+We can then picture Dyck words as routes starting from $(0,0)$. (1) means that each route must also end at $(0,0)$ ($\cong$ (D1)), while (2) means that the $x$ and $y$ axes may never be crossed ($\cong$ (D2)). An example walk is depicted in Fig.~\ref{fig:walk}.
 \\
 \begin{figure}
     \begin{center}
@@ -204,10 +213,10 @@ We can then picture Dyck words as routes starting from $(0,0)$. (1) means that e
 \end{figure}
 
 \section{Modeling Techniques}\label{sec2}
-We now present a number of novel techniques that we developed as an attempt to solve the problem at hand, incrementally moving towards more complex and abstract grammars. For the purpose of experimentation we have implemented these techniques, based on a software library for parsing MCFGs\cite{ljunglof}. The resulting Python code is open-source and available online\footnote{\url{https://github.com/omelkonian/dyck}}.
+We now present a number of novel techniques that we developed as an attempt to solve the problem at hand, incrementally moving towards more complex and abstract grammars. For the purpose of experimentation we have implemented these techniques, based on a software library for parsing MCFGs~\cite{ljunglof}. The resulting Python code is open-source and available online\footnote{\url{https://github.com/omelkonian/dyck}}.
 
 \subsection{Triple Insertion}
-To set things off, we start with the grammar of \textit{triple insertion} in Fig.\ref{fig:ins}. This grammar operates on non-terminals $\s{W}(x,y)$, producing $\s{W}(x',y')$ with an additional triplet \textit{a, b, c} that respects the partial orders $x<y$ and $a<b<c$. The end-word is produced through the concatenation of $(x,y)$.
+To set things off, we start with the grammar of \textit{triple insertion} in Fig.~\ref{fig:ins}. This grammar operates on non-terminals $\s{W}(x,y)$, producing $\s{W}(x',y')$ with an additional triplet \textit{a, b, c} that respects the partial orders $x<y$ and $a<b<c$. The end-word is produced through the concatenation of $(x,y)$.
 
 \begin{figure}
   \centering
@@ -215,21 +224,23 @@ To set things off, we start with the grammar of \textit{triple insertion} in Fig
 	\setcounter{equation}{0}
 	\s{S}(xy) \leftarrow \s{W}(x,y)&. \\
 	\s{W}(\epsilon, xy\textbf{abc}) \leftarrow \s{W}(x,y)&. \\
+	\s{W}(\epsilon, x\textbf{a}y\textbf{bc}) \leftarrow \s{W}(x,y)&. \\
+	\s{W}(\epsilon, x\textbf{ab}y\textbf{c}) \leftarrow \s{W}(x,y)&. \\
 	... \nonumber \\
 	\setcounter{equation}{60}
 	\s{W}(\textbf{abc}xy, \epsilon) \leftarrow \s{W}(x,y)&. \\
 	\s{W}(\epsilon, \textbf{abc})&. \\
-	... \nonumber \\
-	\setcounter{equation}{64}
+	\s{W}(\textbf{a}, \textbf{bc})&. \\
+	\s{W}(\textbf{ab}, \textbf{c})&. \\
 	\s{W}(\textbf{abc}, \epsilon)&.
 	\end{align}
   \caption{Grammar of triple insertions}  
   \label{fig:ins}
 \end{figure}
 
-Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.\ref{fig:fmp} for an example.
+Despite being conceptually simple, this grammar consists of a large number of rules. Its expressivity is also limited; the prominent weak point is its inability to manage the effect of \textit{straddling}, namely the generation of words whose substituents display complex interleaving patterns. Refer to Fig.~\ref{fig:fmp} for an example.
 \subsection{Meta-Grammars}\label{subsec22}
-To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig.\ref{fig:meta-ins}.
+To address the issue of rule size, we introduce the notion of \textit{meta-grammars}, loosely inspired by Van Wijngaarden's work~\cite{vanwijn}, which allows a more abstract view of the grammar as a whole. Specifically, we define $\mathcal{O}$ as the \textit{meta-rule} which, given a rule format, a set of partial orders (over the tuple indices of its premises and/or newly added terminal symbols), and the MCFG dimensionality, automatically generates all the order-respecting permutations. An example of how we can abstract away from explicitly enumerating the entirety of our initial rules is showcased in Fig.~\ref{fig:meta-ins}.
 
 \begin{figure}
   \centering
@@ -247,9 +258,9 @@ This approach enhances the potential expressivity of our grammars as well. For i
 \mathcal{G}_1: \mathcal{G}_0 + \Or{\s{W}}{\s{W}, \s{W}}{x < y,\ z < w}{2}
 \]
 
-The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions.
+The addition of this rule gets us closer to completeness, but we are still not quite there. We have thus far only used a single non-terminal, not utilizing the expressivity that an MCFG allows. To that end, we propose new non-terminals to represent incomplete word \textit{states}; that is, words that either have an extra symbol or miss one. The former are \textit{positive} states, whereas the latter are \textit{negative}. The inclusion of these extra states would allow for more intricate interactions.
 
-Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm\cite{petersen}. Fig.\ref{fig:rules} depicts the growth rules in the exact same web form as proposed by Petersen, modulo node branding. A subset of these web-reduction rules are, in fact, precisely modelled by the meta-grammar $\mathcal{G}_2$ presented in Fig.\ref{fig:g2}. In section \ref{sec4}, we briefly explain our inability to model the whole set of rules with a 2-MCFG, hence rendering our grammar complete.
+Interestingly, there is a direct correspondence between these non-terminals and the nodes of Petersen's growth algorithm~\cite{petersen}. Fig.~\ref{fig:rules} depicts the growth rules in the exact same web form as proposed by Petersen, modulo node branding. A subset of these web-reduction rules are, in fact, precisely modelled by the meta-grammar $\mathcal{G}_2$ presented in Fig.~\ref{fig:g2}. In section~\ref{sec4}, we briefly explain our inability to model the whole set of rules with a 2-MCFG, which would render our grammar complete.
 
 \begin{figure}
 \[
@@ -404,7 +415,6 @@ every node/.style={anchor=base},xscale=.725,yscale=1,
 $\mathcal{G}_2$ consists of base cases for positive states, possible state interactions, closures of pairs of inverse polarity and a universally quantified meta-rule that allows the combination of any incomplete state with a well-formed one (i.e. non-terminal $\s{W}$).
 \begin{figure}
     \centering
-		\begin{minipage}{.2\textwidth}
 		\begin{align*}
 		&\s{S}(xy) \leftarrow \s{W}(x,y). \\
 		&\Or{\s{W}}{\epsilon}{a < b < c}{2} \\
@@ -412,12 +422,7 @@ $\mathcal{G}_2$ consists of base cases for positive states, possible state inter
 		&\Or{\s{B}^+}{\epsilon}{b}{2} \\
 		&\Or{\s{C}^+}{\epsilon}{c}{2} \\
 		&\Or{C^-}{A^+, B^+}{x < y < z < w}{2} \\
-		&\Or{B^-}{A^+, C^+}{x < y < z < w}{2}
-		\end{align*}
-		\end{minipage}
-~ ~ ~ ~ ~ ~
-	    \begin{minipage}{.2\textwidth}
-		\begin{align*}
+		&\Or{B^-}{A^+, C^+}{x < y < z < w}{2} \\
 		&\Or{A^-}{B^+, C^+}{x < y < z < w}{2} \\
 		&\Or{A^+}{C^-, B^-}{x < y < z < w}{2} \\
 		&\Or{B^+}{C^-, A^-}{x < y < z < w}{2} \\
@@ -427,7 +432,6 @@ $\mathcal{G}_2$ consists of base cases for positive states, possible state inter
 		&\forall \ \s{K} \in \{\textsc{A}^{+/-},\ \textsc{B}^{+/-},\ \textsc{C}^{+/-}\}:\\ 
 		&\quad\Or{\s{K}}{\s{K}, \s{W}}{x < y,\ z < w}{2}
 		\end{align*}
-		\end{minipage}
     \caption{$\mathcal{G}_2$: Meta-grammar of incomplete states}%
     \label{fig:g2}
 \end{figure}
@@ -443,27 +447,43 @@ The improved performance of the above approaches again proved insufficient to co
 \Or{C^-}{A^+_{left}, B^+}{x < y, x < z < w}{2}
 \]
 
-In order to accommodate the interactions between this increased number of states, we need to keep track of both internal and external order constraints. At this point, the abstraction offered by our meta-grammar approach does not cover our needs any more. The same difficulty that we had encountered before is prominent once more, except now at an even higher level. 
+In order to accommodate the interactions between this increased number of states, we need to keep track of both internal and external order constraints. At this point, the abstraction offered by our meta-grammar approach does not cover our needs anymore. The same difficulty that we had encountered before is prominent once more, except now at an even higher level. 
 
 As a solution to the aforementioned limitation, we propose a system that can automatically create a full-blown m-MCFG given only the states it consists of. To accomplish this, we assign each state a unique \textit{descriptor} that specifies the content of its tuple's elements. Aligning these descriptors with the tuple, we can then infer the descriptor of the resulting tuple of every possible state interaction. For the subset of those interactions whose resulting descriptor is matched with a state, we can now automatically infer the rule.
 
-Formally, the system is initialized with a map $\mathcal{D}$, such as the one illustrated in Fig.\ref{fig:desc}. Its domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors}.
+Formally, the system is initialized with a map $\mathcal{D}$, such as the one illustrated in Fig.~\ref{fig:desc}. Its domain, $dom(\mathcal{D})$, is a set of \textit{state identifiers} and its codomain, $codom(\mathcal{D})$, is the set of their corresponding \textit{state descriptors}.
 
 \begin{figure}
-\begin{align*}
-\s{W} &\mapsto (\epsilon, \epsilon) \\
-\s{A}^+_{l} &\mapsto (a, \epsilon) \\
-\s{A}^+_{r} &\mapsto (\epsilon, a) \\
-&\quad \vdots \\
-\s{C}^-_{r} &\mapsto (\epsilon, ab) \\
-\s{C}^-_{l, r} &\mapsto (a, b)
-\end{align*}
-\caption{Map $\mathcal{D}$ for refined states}
-\label{fig:desc}
+  \begin{minipage}{.45\textwidth}
+    \begin{align*}
+			\s{W} &\mapsto (\epsilon, \epsilon) \\
+			\s{A}^+_{l} &\mapsto (a, \epsilon) \\
+			\s{A}^+_{r} &\mapsto (\epsilon, a) \\
+			\s{B}^+_{l} &\mapsto (b, \epsilon) \\
+			\s{B}^+_{r} &\mapsto (\epsilon, b) \\
+			\s{C}^+_{l} &\mapsto (c, \epsilon) \\
+			\s{C}^+_{r} &\mapsto (\epsilon, c) \\
+			\s{A}^-_{l} &\mapsto (bc, \epsilon) \\
+    \end{align*}
+  \end{minipage}
+  \begin{minipage}{.45\textwidth}
+    \begin{align*}
+			\s{A}^-_{r} &\mapsto (\epsilon, bc) \\
+			\s{A}^-_{lr} &\mapsto (b, c) \\
+			\s{B}^-_{l} &\mapsto (ac, \epsilon) \\
+			\s{B}^-_{r} &\mapsto (\epsilon, ac) \\
+			\s{B}^-_{lr} &\mapsto (a, c) \\
+			\s{C}^-_{l} &\mapsto (ab, \epsilon) \\
+			\s{C}^-_{r} &\mapsto (\epsilon, ab) \\
+			\s{C}^-_{lr} &\mapsto (a, b) \\
+    \end{align*}
+  \end{minipage}
+  \caption{Map $\mathcal{D}$ for refined states}
+  \label{fig:desc}
 \end{figure}
 
-\begin{algorithm}[H]
-\caption{ARIS: Automatic Rule Inference System}\label{euclid}
+\begin{algorithm}
+\caption{\textsc{ARIS}: Automatic Rule Inference System}\label{euclid}
 \begin{algorithmic}
 \Procedure{aris}{$\mathcal{D}$}
 	\For{$X \mapsto (d_1,\dots ,d_n) \in \mathcal{D}$}
@@ -491,43 +511,59 @@ Formally, the system is initialized with a map $\mathcal{D}$, such as the one il
 	\EndFor
 \EndProcedure
 \end{algorithmic}
-\end{algorithm}
+\end{algorithm} 
 
-Meta-grammars accelerated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. ARIS builds upon this notion to raise the level of abstraction even further; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
+Meta-grammars accelerated the process of creating grammars, by letting us simply describe rules instead of explicitly defining them. \textsc{ARIS} builds upon this notion to raise the level of abstraction even further\footnote{An avid reader will notice the use of the $\mathcal{O}$ meta-rule in the \textsc{ARIS} algorithm.}; one needs only specify a grammar's states and its descriptors, thus eliminating the need to define rules or even meta-rules.
+
+We use \textsc{ARIS} instantiated with map $\mathcal{D}$ of Fig.~\ref{fig:desc} to generate
+$\mathcal{G}_4$ as our last attempt to parse $D^3$.
+Even though map $\mathcal{D}$ consists of a mere amount of 16 mappings,
+it produces a lavish parsing system of 1456 concrete rules;
+disappointingly, these again do not yield a complete solution to our problem.
 
 \section{Tools \& Results}
 \subsection{Grammar Utilities}
-We have implemented the modelling techniques described in Section \ref{sec2} and distributed a Python package, called \textbf{dyck}, which provides the programmer with a \textit{domain-specific language} close to this paper's mathematical notation. To facilitate experimentation, our package includes features such as grammar selection, time measurements, word generation and soundness/completeness checking. The following example demonstrates the definition of $\mathcal{G}_1$:
+We have implemented the modelling techniques described in Section~\ref{sec2} and distributed a Python package, called \textbf{dyck}, which provides the programmer with a \textit{domain-specific language} close to this paper's mathematical notation. To facilitate experimentation, our package includes features such as grammar selection, time measurements, word generation and soundness/completeness checking. The following example demonstrates the definition of $\mathcal{G}_3$:
 
-\begin{center}
-\begin{minipage}{0.5\textwidth}
-\begin{minted}[baselinestretch=1.1, fontsize=\small]{python}
+\begin{minted}{python}
 from dyck import *
-G_1 = Grammar([
-    ('S <- W', {(x, y)}),
-    O('W', {(a, b, c)}),
-    O('W <- W', {(x, y), (a, b, c)}),
-    O('W <- W, W', {(x, y), (z, w)}) 
-])
+G3 = Grammar(initial='W',
+  # Base Cases
+  O('W', {(a, b, c)}),
+  O('A-', {(b, c)}), O('B-', {(a, c)}), O('C-', {(a, b)}),
+  O('A+', {(a,)}),   O('B+', {(b,)}),   O('C+', {(c,)}),
+  # Combinations
+  O('C- <- A+, B+', {(x, y, z, w)}),
+  O('B- <- A+, C+', {(x, y, z, w)}),
+  O('A- <- B+, C+', {(x, y, z, w)}),
+  O('C+ <- B-, A-', {(x, y, z, w)}),
+  O('B+ <- C-, A-', {(x, y, z, w)}),
+  O('A+ <- C-, B-', {(x, y, z, w)}),
+  forall(all_states,
+         lambda K: O('K <- K, W', {(x, y), (z, w)})),
+  # Closures
+  O('W <- A+, A-', {(x, y, z, w)}),
+  O('W <- C-, C+', {(x, y, z, w)}),
+  # Universal Triple Insertion
+  forall(all_states,
+         lambda K: O('K <- K', {(x, y), (a, b, c)})))
 \end{minted}
-\end{minipage}
-\end{center}
 
 \subsection{Visualization}
-As counter-examples began to grow in size and number, we realised the necessity of a visualization tool to assist us in identifying properties they may exhibit. To that end, we distribute another Python package, called \textbf{dyckviz}, which allows the simultaneous visualization of tableau-promotion and web-rotation (grouped in their corresponding equivalence classes). An example of a web as rendered by our tool is given in Fig.\ref{fig:web}.
+As counter-examples began to grow in size and number, we realised the necessity of a visualization tool to assist us in identifying properties they may exhibit. To that end, we distribute another Python package, called \textbf{dyckviz}, which allows the simultaneous visualization of tableau-promotion and web-rotation (grouped in their corresponding equivalence classes). An example of a web as rendered by our tool is given in Fig.~\ref{fig:web}.
 
 Young tableaux in an orbit are colour-grouped by their column indices, which sheds some light on how the \textit{jeu-de-taquin} actually influences the structure of the corresponding Dyck words. Interesting patterns have began to emerge, which still remain to be properly investigated. 
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=.75\textwidth]{web.pdf}
+\includegraphics[width=0.95\textwidth]{web.pdf}
 \caption{Spider web of \w{abaacbbacbabaccbcc}}
 \label{fig:web}
 \end{center}
 \end{figure}
 
 \subsection{Grammar Comparisons}
-Fig.\ref{fig:charts} displays three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion\footnote{\url{https://oeis.org/A000108}}).
+Fig.~\ref{fig:charts} displays three charts, depicting the number of rules, percentage of counter-examples and computation times of each of our grammars for $D^3_n$ with $n$ ranging from $2$ to $6$ (where $n$ denotes the number of $abc$ triplets). Even though none of our proposed grammars is complete, we observe that as grammars get more abstract, the number of failing parses steadily declines. This however comes at the cost of rule size growth, which in turn is associated with an increase in computation times. What this practically means is that we are unable to continue testing more elaborate grammars or scale our results to higher orders of $n$ (note that $| \! | D^3_n | \! |$ also has a very rapid rate of expansion\footnote{\url{https://oeis.org/A000108}}).
 \begin{figure}[h]
 % Rule size
 \begin{tikzpicture}
@@ -659,10 +695,10 @@ Fig.\ref{fig:charts} displays three charts, depicting the number of rules, perce
 \end{figure}
 
 \section{Road to Completeness}\label{sec4}
-To our knowledge, no other attempt has come so close to modelling $D^3$ with a 2-MCFG. We attribute this to the combination of a pragmatic approach with results from existing theoretical work. In this section, we present a collection of additional ideas, which we consider worthy of further exploration.
+To our knowledge, no other attempt has come as close to modelling $D^3$ with a 2-MCFG. We attribute this to the combination of a pragmatic approach with results from existing theoretical work. In this section, we present a collection of additional ideas, which we consider worthy of further exploration.
 
 \paragraph{\textbf{First-Match Policy and Relinking}}
-Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i \ \forall i \in n$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$, that would abide by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
+Possibly the most intuitive way of checking whether a word $w$ is part of $D^3_n$ is checking whether a pair of links occur that match $a_i$ to $b_i$ and $b_i$ to $c_i, \ \forall \ i \in n$. We call this process of matching the \textit{first-match policy}. The question arises whether a grammar can accomplish inserting a triplet of $a$, $b$, $c$, that would abide by the first-match policy. If that were the case, it would be relatively easy to generalize this ability by induction to every $n \in \mathbb{N}$. Unfortunately, the answer is seemingly negative; the expressiveness provided by a 2-MCFG does not allow for the arbitrary insertions required. On a related note, being able to produce a word state $W(x,y)$ where $w=xy$ and $x$ any possible prefix of $w$, gives no guarantee of being able to produce the same word with an extra triplet inserted due to the straddling property. 
 
 However, if rules existed that would allow for match-making and breaking, i.e. match \textit{relinking}, an inserted symbol could be temporarily matched with what might be its first match-policy in a local scope, and then relink it to its correct match when merging two words together.
 \begin{figure}[h]
@@ -702,8 +738,10 @@ We tried to accurately present the intricacies of $D^3$ and the difficulties tha
 
 Despite our best efforts, the question of whether $D^3$ can actually be encapsulated within a 2-MCFG still remains unanswered. Regardless, this problem has been very rewarding to pursue, and we hope to have intrigued the interested reader enough to further research the subject, use our code, or strive for a solution on her own.
 
-\section*{Acknowledgements}
-We would like to thank Dr. Michael Moortgat for introducing us to the problem, providing insightful feedback and motivating us throughout the process, as well as Dr. Jurriaan Hage for suggesting the use of multi-dimensional Dyck languages in static analysis.
+%\section*{Acknowledgements}
+%We would like to thank Michael Moortgat for introducing us to the problem, providing
+%insightful feedback and motivating us throughout the process, as well as Jurriaan Hage for
+%suggesting the use of multi-dimensional Dyck languages in static analysis.
 
 % Bibliography
 \begin{thebibliography}{10}
